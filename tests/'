@@ -1,0 +1,17 @@
+import pytest
+from quadsim.robots.robot import Robot, Motor, Sensor
+
+@pytest.mark.parametrize(
+    "robot",
+    [
+        pytest.param(
+            Robot(p, [Motor()], [Sensor()]),
+            id="BaseRobot",
+        ),
+    ],
+)
+def test_step(
+    robot: Any,
+) -> None:
+    robot.step()
+    assert robot._step_counter == 1
