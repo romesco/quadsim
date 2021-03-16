@@ -3,7 +3,7 @@
 Quadruped Simulation &amp; Control Framework
 
 ## dev
-```python
+```bash
 # clone the repo
 
 # install deps
