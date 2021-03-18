@@ -3,6 +3,7 @@
 Quadruped Simulation &amp; Control Framework
 
 ## dev
+
 ```bash
 # clone the repo
 git clone git@github.com:romesco/quadsim.git
@@ -14,4 +15,3 @@ pip install -e .[dev]
 nox
 
 ```
-

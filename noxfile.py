@@ -17,7 +17,7 @@ tests_path = f"{project}/tests"
 # workflow only install reqs needed for a specific session, not all dev reqs.
 test_reqs = ["coverage", "pytest", "pygments"]
 
-python_versions = ["3.9", "3.8", "3.7"]
+python_versions = ["3.7"]
 
 nox.options.sessions = (
     "pre-commit",
@@ -76,7 +76,7 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
         hook.write_text("\n".join(lines))
 
 
-@nox.session(name="pre-commit", python="3.9")
+@nox.session(name="pre-commit", python=python_versions)
 def precommit(session: Session) -> None:
     """Lint using pre-commit."""
     args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
