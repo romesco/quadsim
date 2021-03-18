@@ -66,7 +66,6 @@ class MotorModel:
         elif motor_control_mode == MotorControlMode.TORQUE:
             desired_torque = motor_commands.copy()
         else:
-            # Action is in the form of
             desired_angle = motor_commands[POSITION_INDEX::COMMAND_DIMENSION]
             kp = motor_commands[KP_INDEX::COMMAND_DIMENSION]
             desired_velocity = motor_commands[VELOCITY_INDEX::COMMAND_DIMENSION]

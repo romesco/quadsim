@@ -17,7 +17,7 @@ tests_path = f"{project}/tests"
 # workflow only install reqs needed for a specific session, not all dev reqs.
 test_reqs = ["coverage", "pytest", "pygments"]
 
-python_versions = ["3.7"]
+python_versions = ["3.9", "3.8", "3.7"]
 
 nox.options.sessions = (
     "pre-commit",
