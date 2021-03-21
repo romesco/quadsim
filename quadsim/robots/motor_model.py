@@ -3,6 +3,7 @@ import enum
 import numpy as np
 from typing import List, Union, Optional
 
+# TODO: would using a named tensor/array be a better alternative to defining these?
 POSITION_INDEX = 0
 KP_INDEX = 1
 VELOCITY_INDEX = 2
@@ -22,20 +23,26 @@ class MotorModel:
         self,
         motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
         num_motors: int = 0,
-        kps: List[float] = List[0.0],
-        kds: List[float] = List[0.0],
+        kps: List[float] = None,
+        kds: List[float] = None,
         max_torque: float = 0.0,
         min_torque: float = 0.0,
         max_velocity: float = 0.0,
         min_velocity: float = 0.0,
         max_position: float = 0.0,
         min_position: float = 0.0,
-    ):
+    ) -> None:
 
         self._motor_control_mode = motor_control_mode
         self._num_motors = num_motors
-        self._min_torque = min_torque
-        self._max_torque = max_torque
+        self._kps = np.array(kps)
+        self._kds = np.array(kds)
+        self._max_torque = np.array(max_torque)
+        self._min_torque = np.array(min_torque)
+        self._max_velocity = np.array(max_velocity)
+        self._min_velocity = np.array(min_velocity)
+        self._max_position = np.array(max_position)
+        self._min_position = np.array(min_position)
         self._strength_ratios = np.ones(num_motors)
 
     # Comment: Do we need explicit seters and getters?

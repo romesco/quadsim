@@ -16,8 +16,8 @@ class MotorModelConf:
     _target_: str = "quadsim.robots.motor_model.MotorModel"
     motor_control_mode: MotorControlMode = MotorControlMode.POSITION
     num_motors: int = 0
-    kps: List[float] = field(default_factory=lambda: [0.0])
-    kds: List[float] = field(default_factory=lambda: [0.0])
+    kps: List[float] = None
+    kds: List[float] = None
     max_torque: float = 0.0
     min_torque: float = 0.0
     max_velocity: float = 0.0
