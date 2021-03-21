@@ -18,21 +18,27 @@ class MotorControlMode(enum.Enum):
 
 
 class MotorModel:
-    def __init__(self, config):
-        self.config = config
-        self._motor_control_mode = self.config.motor_control_mode
-        self._num_motors = self.config.num_motors
-        self._kp = self.config.kps
-        self._kd = self.config.kds
-        self._strength_ratios = np.ones(self._num_motors)
-        # Thresholds
-        self._max_torque = self.config.max_torque
-        self._min_torque = self.config.min_torque
-        self._max_velocity = self.config.max_velocity
-        self._min_velocity = self.config.min_velocity
-        self._max_position = self.config.max_position
-        self._min_position = self.config.min_position
+    def __init__(
+        self,
+        motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
+        num_motors: int = 0,
+        kps: List[float] = List[0.0],
+        kds: List[float] = List[0.0],
+        max_torque: float = 0.0,
+        min_torque: float = 0.0,
+        max_velocity: float = 0.0,
+        min_velocity: float = 0.0,
+        max_position: float = 0.0,
+        min_position: float = 0.0,
+    ):
 
+        self._motor_control_mode = motor_control_mode
+        self._num_motors = num_motors
+        self._min_torque = min_torque
+        self._max_torque = max_torque
+        self._strength_ratios = np.ones(num_motors)
+
+    # Comment: Do we need explicit seters and getters?
     def set_motor_gains(
         self, kp: Union[float, List[float]], kd: Union[float, List[float]]
     ):
