@@ -1,4 +1,4 @@
-from setuptools import find_packages
+from setuptools import find_packages, find_namespace_packages
 from setuptools import setup
 
 requirements = ["pybullet", "numpy", "absl-py", "ml_collections"]
@@ -19,7 +19,8 @@ dev_requirements = [
 setup(
     name="quadsim",
     version="0.1.0",
-    packages=find_packages(),
+    packages=find_packages()
+            + find_namespace_packages(include=["hydra_configs*"]),
     author=["Yuxiang Yang, Rosario Scalise"],
     author_email=["yxyang@berkeley.edu", "rosario@cs.uw.edu"],
     url="http://github.com/romesco/quadsim",
