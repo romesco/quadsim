@@ -19,3 +19,9 @@ configen:
     - name: quadsim.robots.motor_model
       classes:
         - MotorModel 
+    - name: quadsim.robots.robot
+      classes:
+        - Robot 
+    - name: quadsim.robots.a1
+      classes:
+        - A1 
