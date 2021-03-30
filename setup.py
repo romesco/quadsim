@@ -1,7 +1,11 @@
 from setuptools import find_packages, find_namespace_packages
 from setuptools import setup
 
-requirements = ["pybullet", "numpy", "absl-py", "ml_collections"]
+requirements = [
+    "pybullet",
+    "numpy",
+    "hydra-core",
+]
 
 dev_requirements = [
     "pytest",
@@ -14,6 +18,7 @@ dev_requirements = [
     "pep8-naming",
     "reorder-python-imports",
     "Pygments",
+    "hydra-configen"
 ]
 
 setup(
