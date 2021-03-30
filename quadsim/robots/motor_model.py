@@ -1,7 +1,10 @@
 """Implements a simple DC motor model."""
 import enum
+from typing import List
+from typing import Optional
+from typing import Union
+
 import numpy as np
-from typing import List, Union, Optional
 
 # TODO: would using a named tensor/array be a better alternative to defining these?
 POSITION_INDEX = 0
@@ -45,7 +48,7 @@ class MotorModel:
         self._min_position = np.array(min_position)
         self._strength_ratios = np.ones(num_motors)
 
-    # Comment: Do we need explicit seters and getters?
+    # Comment: Do we need explicit setters and getters?
     def set_motor_gains(
         self, kp: Union[float, List[float]], kd: Union[float, List[float]]
     ):

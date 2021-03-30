@@ -4,10 +4,9 @@
 # fmt: off
 # isort: skip_file
 # flake8: noqa
-# Hydra + Quadsim 
-
-from dataclasses import dataclass, field
-from omegaconf import MISSING
+# Hydra + Quadsim
+from dataclasses import dataclass
+from dataclasses import field
 from quadsim.robots.motor_model import MotorControlMode
 from typing import List
 
@@ -17,8 +16,8 @@ class MotorModelConf:
     _target_: str = "quadsim.robots.motor_model.MotorModel"
     motor_control_mode: MotorControlMode = MotorControlMode.POSITION
     num_motors: int = 0
-    kps: List[float] = MISSING  # Field
-    kds: List[float] = MISSING  # Field
+    kps: List[float] = None
+    kds: List[float] = None
     max_torque: float = 0.0
     min_torque: float = 0.0
     max_velocity: float = 0.0
