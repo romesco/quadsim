@@ -8,7 +8,7 @@
 from dataclasses import dataclass
 from dataclasses import field
 from quadsim.robots.motor_model import MotorControlMode
-from typing import List
+from typing import Tuple
 
 
 @dataclass
@@ -16,8 +16,8 @@ class MotorModelConf:
     _target_: str = "quadsim.robots.motor_model.MotorModel"
     motor_control_mode: MotorControlMode = MotorControlMode.POSITION
     num_motors: int = 0
-    kps: List[float] = None
-    kds: List[float] = None
+    kps: Tuple[float, ...] = (0.0,)
+    kds: Tuple[float, ...] = (0.0,)
     max_torque: float = 0.0
     min_torque: float = 0.0
     max_velocity: float = 0.0

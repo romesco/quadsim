@@ -4,12 +4,13 @@
 # fmt: off
 # isort: skip_file
 # flake8: noqa
-# Hydra + Quadsim 
-
-from dataclasses import dataclass, field
-from omegaconf import MISSING
+# Hydra + Quadsim
+from dataclasses import dataclass
+from dataclasses import field
 from typing import Any
-from typing import List
+from typing import Tuple
+
+from omegaconf import MISSING
 
 
 @dataclass
@@ -19,8 +20,8 @@ class RobotConf:
     motors: Any = MISSING  # List[Motor]
     sensors: Any = MISSING  # List[Sensor]
     urdf_path: str = MISSING
-    base_link_names: List[str] = MISSING
-    motor_joint_names: List[str] = MISSING
-    init_motor_angles: List[float] = MISSING
-    foot_link_names: List[str] = MISSING
+    base_link_names: Tuple[str] = MISSING
+    motor_joint_names: Tuple[str] = MISSING
+    init_motor_angles: Tuple[float] = MISSING
+    foot_link_names: Tuple[str] = MISSING
     on_rack: bool = MISSING

@@ -1,6 +1,7 @@
 """Base class for all robots."""
 from typing import Any
 from typing import List
+from typing import Tuple
 
 import numpy as np
 
@@ -22,10 +23,10 @@ class Robot:
         motors: List[Motor],
         sensors: List[Sensor],
         urdf_path: str,
-        base_link_names: List[str],
-        motor_joint_names: List[str],
-        init_motor_angles: List[float],
-        foot_link_names: List[str],
+        base_link_names: Tuple[str],
+        motor_joint_names: Tuple[str],
+        init_motor_angles: Tuple[float],
+        foot_link_names: Tuple[str],
         on_rack: bool,  # TODO: should this move to simulator only?
     ) -> None:
         """Constructs a base robot and resets it to the initial states.

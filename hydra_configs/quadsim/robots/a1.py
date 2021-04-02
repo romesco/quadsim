@@ -20,8 +20,8 @@ class A1Conf:
     motors: Any = MISSING  # List[Motor]
     sensors: Any = MISSING  # List[Sensor]
     urdf_path: str = "a1/a1.urdf"
-    base_link_names: Tuple[str] = "trunk"
-    motor_joint_names: Tuple[str] = ('FR_hip_joint', 'FR_upper_joint', 'FR_lower_joint', 'FL_hip_joint', 'FL_upper_joint', 'FL_lower_joint', 'RR_hip_joint', 'RR_upper_joint', 'RR_lower_joint', 'RL_hip_joint', 'RL_upper_joint', 'RL_lower_joint')
+    base_link_names: Tuple[str, ...] = ('trunk',)
+    motor_joint_names: Tuple[str, ...] = ('FR_hip_joint', 'FR_upper_joint', 'FR_lower_joint', 'FL_hip_joint', 'FL_upper_joint', 'FL_lower_joint', 'RR_hip_joint', 'RR_upper_joint', 'RR_lower_joint', 'RL_hip_joint', 'RL_upper_joint', 'RL_lower_joint')
     init_motor_angles: Tuple[float] = (0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8)
     foot_link_names: Tuple[str] = ('FR_toe', 'FL_toe', 'RR_toe', 'RL_toe')
     on_rack: bool = False

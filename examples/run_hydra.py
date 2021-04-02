@@ -17,20 +17,18 @@ class TopLvlConf:
         # override any other attribute beyond the defaults specified in the Conf
     )
     robot: Any = A1Conf(
-        motors=[
-            MotorModelConf(
-                num_motors=12,
-                motor_control_mode=MotorControlMode.POSITION,
-                max_position=[0.802851455917, 4.18879020479, -0.916297857297] * 4,
-                min_position=[-0.802851455917, -1.0471975512, -2.69653369433] * 4,
-                max_torque=[33.5] * 12,
-                min_torque=[-33.5] * 12,
-                max_velocity=[12] * 16,
-                min_velocity=[-12] * 16,
-                kps=[12] * 100,
-                kds=[1.0, 2.0, 2.0] * 4,
-            )
-        ]
+        motors=MotorModelConf(
+            motor_control_mode=MotorControlMode.POSITION,
+            num_motors=12,
+            max_torque=[33.5] * 12,
+            min_torque=[-33.5] * 12,
+            max_velocity=[16] * 12,
+            min_velocity=[-16] * 12,
+            max_position=[0.802851455917, 4.18879020479, -0.916297857297] * 4,
+            min_position=[-0.802851455917, -1.0471975512, -2.69653369433] * 4,
+            kps=[100] * 12,
+            kds=[1, 2, 2] * 4,
+        )
     )
 
 

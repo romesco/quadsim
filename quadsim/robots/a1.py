@@ -16,8 +16,8 @@ class A1(Robot):
         motors: List[Motor] = None,
         sensors: List[Sensor] = None,
         urdf_path: str = "a1/a1.urdf",
-        base_link_names: Tuple[str] = ("trunk"),
-        motor_joint_names: Tuple[str] = (
+        base_link_names: Tuple[str, ...] = ("trunk",),
+        motor_joint_names: Tuple[str, ...] = (
             "FR_hip_joint",
             "FR_upper_joint",
             "FR_lower_joint",
