@@ -68,8 +68,7 @@ class Robot:
         """Records ids of base link, foot links and motor joints.
 
         For detailed documentation of links and joints, please refer to the
-        pybullet documentation at:
-        https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.e27vav9dy7v6
+        pybullet documentation.
         """
         self._chassis_link_ids = [-1]
         self._motor_joint_ids = []
