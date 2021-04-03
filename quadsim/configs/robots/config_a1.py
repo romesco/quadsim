@@ -2,7 +2,7 @@
 import ml_collections
 import numpy as np
 
-from qudsim.robots.motor_model import MotorControlMode
+from quadsim.robots.motor_model import MotorControlMode
 
 
 def get_config():
@@ -12,16 +12,17 @@ def get_config():
     sim_config = ml_collections.ConfigDict()
     sim_config.timestep = 0.002
     sim_config.action_repeat = 1
-    sim_config.hard_reset = True
-    sim_config.on_rack = False
-    sim_config.init_position = [0.0, 0.0, 0.32]
-    sim_config.init_rack_position = [0.0, 0.0, 1]
     sim_config.reset_time = 3
+    sim_config.num_solver_iterations = 30
     config.simulation = sim_config
+
+    config.init_position = [0.0, 0.0, 0.32]
+    config.init_rack_position = [0.0, 0.0, 1]
+    config.on_rack = False
 
     # urdf and kinematics
     config.urdf_path = "a1/a1.urdf"
-    config.base_link_names = ["trunk"]
+    config.base_joint_names = []
     config.motor_joint_names = [
         "FR_hip_joint",
         "FR_upper_joint",
@@ -36,7 +37,12 @@ def get_config():
         "RL_upper_joint",
         "RL_lower_joint",
     ]
-    config.foot_link_names = ["FR_toe", "FL_toe", "RR_toe", "RL_toe"]
+    config.foot_joint_names = [
+        "FR_toe_fixed",
+        "FL_toe_fixed",
+        "RR_toe_fixed",
+        "RL_toe_fixed",
+    ]
     config.init_motor_angles = np.array([0.0, 0.9, -1.8] * 4)
 
     # Motor control configs
