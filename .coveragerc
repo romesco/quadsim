@@ -4,3 +4,4 @@ source =
 
 omit =
   *_test.py
+  quadsim/examples/
