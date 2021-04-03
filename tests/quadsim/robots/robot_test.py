@@ -1,6 +1,5 @@
 """Unit tests for the motor model class."""
 from absl.testing import parameterized
-from ml_collections import config_dict
 import numpy as np
 import pybullet
 import pybullet_data
