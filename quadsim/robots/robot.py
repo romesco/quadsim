@@ -1,6 +1,4 @@
 """Base class for all robots."""
-from absl import logging
-
 import numpy as np
 import pybullet_data
 

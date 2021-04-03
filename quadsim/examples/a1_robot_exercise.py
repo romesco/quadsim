@@ -5,7 +5,6 @@ python -m tests.quadsim.robots.robot_test
 """
 from absl import app
 from absl import flags
-from absl import logging
 
 from ml_collections import config_flags
 import numpy as np
