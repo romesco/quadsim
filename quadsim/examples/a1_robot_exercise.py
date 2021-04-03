@@ -39,7 +39,7 @@ def main(argv):
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.loadURDF("plane.urdf")
     robot = Robot(p, FLAGS.robot_config)
-    for t in range(10000):
+    for _ in range(10000):
         action = get_action(robot.time_since_reset)
         robot.step(action)
         time.sleep(0.002)
