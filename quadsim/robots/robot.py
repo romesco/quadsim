@@ -2,7 +2,7 @@
 import numpy as np
 import pybullet_data
 
-from quadsim.robots import motor_model
+from quadsim.robots import motor_group
 
 
 class Robot:
@@ -20,10 +20,10 @@ class Robot:
         """
         self._pybullet_client = pybullet_client
         self.config = config
+        self._motor_group = motor_group.MotorGroup(self.config.motors)
         self._setup_simulator()
         self._load_robot_urdf()
-        self._motor_model = motor_model.MotorModel(self.config.motor)
-        self._num_motors = self._motor_model.num_motors
+        self._num_motors = self._motor_group.num_motors
         self._motor_torques = None
         self._step_counter = 0
         self.reset()
@@ -80,7 +80,7 @@ class Robot:
             joint_name = joint_info[1].decode("UTF-8")
             if joint_name in self.config.base_joint_names:
                 self._chassis_link_ids.append(joint_id)
-            elif joint_name in self.config.motor_joint_names:
+            elif joint_name in self._motor_group.motor_joint_names:
                 self._motor_joint_ids.append(joint_id)
             elif joint_name in self.config.foot_joint_names:
                 self._foot_link_ids.append(joint_id)
@@ -126,12 +126,12 @@ class Robot:
         )
         for _ in range(num_reset_steps):
             self.step(
-                self.config.init_motor_angles, motor_model.MotorControlMode.POSITION
+                self.config.init_motor_angles, motor_group.MotorControlMode.POSITION
             )
         self._step_counter = 0
 
     def _apply_action(self, action, motor_control_mode=None) -> None:
-        torques, observed_torques = self._motor_model.convert_to_torque(
+        torques, observed_torques = self._motor_group.convert_to_torque(
             action, self.motor_angles, self.motor_velocities, motor_control_mode
         )
         self._pybullet_client.setJointMotorControlArray(

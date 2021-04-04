@@ -20,7 +20,7 @@ class MotorControlMode(enum.Enum):
     HYBRID = 2
 
 
-class MotorModel:
+class MotorGroup:
     """Implements a simple DC motor model for simulation.
 
     To accurately model the motor behaviors, this class converts all motor
@@ -32,32 +32,68 @@ class MotorModel:
       torque is a sum of PD torque and additional torque.
     """
 
-    def __init__(self, config) -> None:
+    def __init__(self, motor_configs) -> None:
         """Initializes the class."""
-        self.config = config
-        self._motor_control_mode = self.config.motor_control_mode
-        self._num_motors = self.config.num_motors
-        self._kp = self.config.kps
-        self._kd = self.config.kds
+        self._num_motors = len(motor_configs)
+        # Check motor control mode
+        motor_control_mode = motor_configs[0].motor_control_mode
+        for motor_config in motor_configs:
+            if motor_control_mode != motor_config.motor_control_mode:
+                raise ValueError(
+                    "Using different control mode for different motors is "
+                    "not currently supported."
+                )
+        self._motor_control_mode = motor_control_mode
+
+        # Vectorize motors into to improve performance
+        self._motor_joint_names = [
+            motor_config.joint_name for motor_config in motor_configs
+        ]
+        self._kp = np.array([motor_config.kp for motor_config in motor_configs])
+        self._kd = np.array([motor_config.kd for motor_config in motor_configs])
         self._strength_ratios = np.ones(self._num_motors)
-        # Thresholds
-        self._max_torque = self.config.max_torque
-        self._min_torque = self.config.min_torque
-        self._max_velocity = self.config.max_velocity
-        self._min_velocity = self.config.min_velocity
-        self._max_position = self.config.max_position
-        self._min_position = self.config.min_position
+        self._max_torque = np.array(
+            [motor_config.max_torque for motor_config in motor_configs]
+        )
+        self._min_torque = np.array(
+            [motor_config.min_torque for motor_config in motor_configs]
+        )
+        self._max_velocity = np.array(
+            [motor_config.max_velocity for motor_config in motor_configs]
+        )
+        self._min_velocity = np.array(
+            [motor_config.min_velocity for motor_config in motor_configs]
+        )
+        self._max_position = np.array(
+            [motor_config.max_position for motor_config in motor_configs]
+        )
+        self._min_position = np.array(
+            [motor_config.min_position for motor_config in motor_configs]
+        )
 
-    def set_motor_gains(
-        self, kp: Union[float, Sequence[float]], kd: Union[float, Sequence[float]]
-    ) -> None:
-        self._kp = np.ones(self._num_motors) * kp
-        self._kd = np.ones(self._num_motors) * kd
+    @property
+    def kp(self):
+        return self._kp
 
-    def set_strength_ratios(
-        self, strength_ratios: Union[float, Sequence[float]]
-    ) -> None:
-        self._strength_ratios = np.ones(self._num_motors) * strength_ratios
+    @kp.setter
+    def kp(self, value: Union[float, Sequence[float]]):
+        self._kp = np.ones(self._num_motors) * value
+
+    @property
+    def kd(self):
+        return self._kd
+
+    @kd.setter
+    def kd(self, value: Union[float, Sequence[float]]):
+        self._kd = np.ones(self._num_motors) * value
+
+    @property
+    def strength_ratios(self):
+        return self._strength_ratios
+
+    @strength_ratios.setter
+    def strength_ratios(self, value: Union[float, Sequence[float]]):
+        self._strength_ratios = np.ones(self._num_motors) * value
 
     def _clip_torques(
         self, desired_torque: Sequence[float], current_motor_velocity: Sequence[float]
@@ -102,3 +138,7 @@ class MotorModel:
     @property
     def num_motors(self):
         return self._num_motors
+
+    @property
+    def motor_joint_names(self):
+        return self._motor_joint_names

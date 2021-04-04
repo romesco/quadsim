@@ -4,32 +4,48 @@ from ml_collections import config_dict
 import numpy as np
 import unittest
 
-from quadsim.robots.motor_model import MotorModel, MotorControlMode
+from quadsim.robots.motor_group import MotorGroup, MotorControlMode
 
 
 def get_default_config():
-    return config_dict.ConfigDict(
-        dict(
-            motor_control_mode=MotorControlMode.POSITION,
-            num_motors=2,
-            kps=np.array([100, 100]),
-            kds=np.array([1, 1]),
-            max_torque=np.array([40, 50]),
-            min_torque=np.array([-60, -50]),
-            max_velocity=np.array([100, 100]),
-            min_velocity=np.array([-100, -100]),
-            max_position=np.array([2, 3]),
-            min_position=np.array([-3, -2]),
-        )
-    )
+    return [
+        config_dict.ConfigDict(
+            dict(
+                joint_name="joint_1",
+                motor_control_mode=MotorControlMode.POSITION,
+                kp=100,
+                kd=1,
+                max_torque=40,
+                min_torque=-60,
+                max_velocity=100,
+                min_velocity=-100,
+                max_position=2,
+                min_position=-3,
+            )
+        ),
+        config_dict.ConfigDict(
+            dict(
+                joint_name="joint_2",
+                motor_control_mode=MotorControlMode.POSITION,
+                kp=100,
+                kd=1,
+                max_torque=50,
+                min_torque=-50,
+                max_velocity=100,
+                min_velocity=-100,
+                max_position=3,
+                min_position=-2,
+            )
+        ),
+    ]
 
 
-class TestMotorModel(parameterized.TestCase):
+class TestMotorGroup(parameterized.TestCase):
     """Test the motor model class."""
 
     def setUp(self):
         config = get_default_config()
-        self.motor_model = MotorModel(config)
+        self.motor_group = MotorGroup(config)
 
     @parameterized.parameters(
         [
@@ -44,7 +60,7 @@ class TestMotorModel(parameterized.TestCase):
     ):
         current_angle = np.zeros(2)
         current_velocity = np.zeros(2)
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             motor_command, current_angle, current_velocity, MotorControlMode.TORQUE
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)
@@ -66,7 +82,7 @@ class TestMotorModel(parameterized.TestCase):
         expected_applied_torque,
         expected_observed_torque,
     ):
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             desired_angle, current_angle, current_velocity, MotorControlMode.POSITION
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)
@@ -90,7 +106,7 @@ class TestMotorModel(parameterized.TestCase):
         command = np.zeros(10)
         command[[0, 5]] = desired_angle
         command[[4, 9]] = desired_extra_torque
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             command, current_angle, current_velocity, MotorControlMode.HYBRID
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)
@@ -118,7 +134,7 @@ class TestMotorModel(parameterized.TestCase):
         command[[1, 6]] = 100
         command[[3, 8]] = 1
         command[[4, 9]] = desired_extra_torque
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             command, current_angle, current_velocity, MotorControlMode.HYBRID
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)
@@ -139,10 +155,10 @@ class TestMotorModel(parameterized.TestCase):
         expected_applied_torque,
         expected_observed_torque,
     ):
-        self.motor_model.set_strength_ratios(strength_ratios)
+        self.motor_group.strength_ratios = strength_ratios
         current_angle = np.zeros(2)
         current_velocity = np.zeros(2)
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             motor_command, current_angle, current_velocity, MotorControlMode.TORQUE
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)
@@ -158,10 +174,11 @@ class TestMotorModel(parameterized.TestCase):
     def test_set_pd_gain(
         self, kp, kd, desired_angle, expected_applied_torque, expected_observed_torque
     ):
-        self.motor_model.set_motor_gains(kp, kd)
+        self.motor_group.kp = kp
+        self.motor_group.kd = kd
         current_angle = np.zeros(2)
         current_velocity = np.array([0.0, 1.0])
-        applied_torque, observed_torque = self.motor_model.convert_to_torque(
+        applied_torque, observed_torque = self.motor_group.convert_to_torque(
             desired_angle, current_angle, current_velocity, MotorControlMode.POSITION
         )
         np.testing.assert_allclose(applied_torque, expected_applied_torque)

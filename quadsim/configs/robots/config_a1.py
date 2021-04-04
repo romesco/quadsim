@@ -2,7 +2,7 @@
 import ml_collections
 import numpy as np
 
-from quadsim.robots.motor_model import MotorControlMode
+from quadsim.robots.motor_group import MotorControlMode
 
 
 def get_config():
@@ -45,22 +45,174 @@ def get_config():
     ]
     config.init_motor_angles = np.array([0.0, 0.9, -1.8] * 4)
 
-    # Motor control configs
-    motor_config = ml_collections.ConfigDict()
-    motor_config.num_motors = 12
-    motor_config.motor_control_mode = MotorControlMode.POSITION
-    motor_config.max_position = np.array(
-        [0.802851455917, 4.18879020479, -0.916297857297] * 4
-    )
-    motor_config.min_position = np.array(
-        [-0.802851455917, -1.0471975512, -2.69653369433] * 4
-    )
-    motor_config.max_torque = np.ones(12) * 33.5
-    motor_config.min_torque = -np.ones(12) * 33.5
-    motor_config.max_velocity = np.ones(12) * 16
-    motor_config.min_velocity = -np.ones(12) * 16
-    motor_config.kps = np.ones(12) * 100
-    motor_config.kds = np.array([1.0, 2.0, 2.0] * 4)
-    config.motor = motor_config
-
+    config.motors = [
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FR_hip_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=0.802851455917,
+                min_position=-0.802851455917,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=1,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FR_upper_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=4.18879020479,
+                min_position=-1.0471975512,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FR_lower_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=-0.916297857297,
+                min_position=-2.6965336943,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FL_hip_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=0.802851455917,
+                min_position=-0.802851455917,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=1,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FL_upper_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=4.18879020479,
+                min_position=-1.0471975512,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="FL_lower_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=-0.916297857297,
+                min_position=-2.6965336943,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RR_hip_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=0.802851455917,
+                min_position=-0.802851455917,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=1,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RR_upper_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=4.18879020479,
+                min_position=-1.0471975512,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RR_lower_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=-0.916297857297,
+                min_position=-2.6965336943,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RL_hip_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=0.802851455917,
+                min_position=-0.802851455917,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=1,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RL_upper_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=4.18879020479,
+                min_position=-1.0471975512,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+        ml_collections.ConfigDict(
+            dict(
+                joint_name="RL_lower_joint",
+                motor_control_mode=MotorControlMode.POSITION,
+                max_position=-0.916297857297,
+                min_position=-2.6965336943,
+                max_torque=33.5,
+                min_torque=-33.5,
+                max_velocity=16,
+                min_velocity=-16,
+                kp=100,
+                kd=2,
+            )
+        ),
+    ]
     return config
