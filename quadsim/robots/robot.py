@@ -22,11 +22,28 @@ class Robot:
         self.config = config
         self._setup_simulator()
         self._load_robot_urdf()
-        self._motor_model = motor_model.MotorModel(self.config.motor)
-        self._num_motors = self._motor_model.num_motors
+        self._construct_motors()
         self._motor_torques = None
         self._step_counter = 0
         self.reset()
+
+    def _construct_motors(self) -> None:
+        # TODO: use hydra and construct these motors outside the robot class.
+        self._motors = []
+        for i in range(self.config.motor.num_motors):
+            self._motors.append(
+                motor_model.MotorModel(
+                    motor_control_mode=self.config.motor.motor_control_mode,
+                    max_position=self.config.motor.max_position[i],
+                    min_position=self.config.motor.min_position[i],
+                    max_velocity=self.config.motor.max_velocity[i],
+                    min_velocity=self.config.motor.min_velocity[i],
+                    max_torque=self.config.motor.max_torque[i],
+                    min_torque=self.config.motor.min_torque[i],
+                    kp=self.config.motor.kps[i],
+                    kd=self.config.motor.kds[i],
+                )
+            )
 
     def _setup_simulator(self) -> None:
         """Sets up the pybullet simulator based on robot config."""
@@ -131,9 +148,19 @@ class Robot:
         self._step_counter = 0
 
     def _apply_action(self, action, motor_control_mode=None) -> None:
-        torques, observed_torques = self._motor_model.convert_to_torque(
-            action, self.motor_angles, self.motor_velocities, motor_control_mode
-        )
+        num_motors = len(self._motors)
+        action = action.reshape((num_motors, -1))
+        torques, observed_torques = [], []
+        for i in range(num_motors):
+            torque, observed_torque = self._motors[i].convert_to_torque(
+                action[i],
+                self.motor_angles[i],
+                self.motor_velocities[i],
+                motor_control_mode,
+            )
+            torques.append(torque)
+            observed_torques.append(observed_torque)
+
         self._pybullet_client.setJointMotorControlArray(
             bodyIndex=self.quadruped,
             jointIndices=self._motor_joint_ids,
