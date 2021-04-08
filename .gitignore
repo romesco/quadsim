@@ -132,5 +132,5 @@ dmypy.json
 *.sw*
 
 #hydra
-ouputs
-multirun
+ouputs/
+multirun/
