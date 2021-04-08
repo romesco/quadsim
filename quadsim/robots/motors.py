@@ -1,4 +1,5 @@
-"""Implements a simple DC motor model."""
+""" Implements models for single DC-DC motors and compositional motor groups.
+"""
 import enum
 import numpy as np
 from typing import Sequence, Union, Optional
@@ -20,7 +21,7 @@ class MotorControlMode(enum.Enum):
     HYBRID = 2
 
 
-class MotorGroup:
+class MotorModel:
     """Implements a simple DC motor model for simulation.
 
     To accurately model the motor behaviors, this class converts all motor
@@ -31,61 +32,88 @@ class MotorGroup:
     - HYBRID: takes in a 5-d tuple (pos, kp, vel, kd, torque), and output
       torque is a sum of PD torque and additional torque.
     """
+    def __init__(
+        self,
+        name: str = None,
+        motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
+        min_position: float = 0.0,
+        max_position: float = 0.0,
+        min_velocity: float = 0.0,
+        max_velocity: float = 0.0,
+        min_torque: float = 0.0,
+        max_torque: float = 0.0,
+        kp: float = 0.0,
+        kd: float = 0.0,
+    ) -> None:
 
-    def __init__(self, motor_configs) -> None:
-        """Initializes the class."""
-        self._num_motors = len(motor_configs)
+        self._name = name
+        self._motor_control_mode = motor_control_mode
+        self._min_position = min_position
+        self._max_position = max_position
+        self._min_velocity = min_velocity
+        self._max_velocity = max_velocity
+        self._min_torque = min_torque
+        self._max_torque = max_torque
+        self._kp = kp
+        self._kd = kd
+
+    def do_something(self) -> None:
+        raise NotImplementedError()
+
+
+class MotorGroup:
+    """A group of motors. This abstraction level allows vectorized motor control
+    which is a computationally advantageous. At least 4x faster.
+    """
+
+    def __init__(
+        self,
+        motors: Sequence[MotorModel]
+    ) -> None:
+
+        self._motors = motors
+        self._num_motors = len(motors)
+
         # Check motor control mode
-        motor_control_mode = motor_configs[0].motor_control_mode
-        for motor_config in motor_configs:
-            if motor_control_mode != motor_config.motor_control_mode:
+        motor0_control_mode = motors[0]._motor_control_mode
+        for motor in motors:
+            if motor0_control_mode != motor._motor_control_mode:
                 raise ValueError(
                     "Using different control mode for different motors is "
                     "not currently supported."
                 )
-        self._motor_control_mode = motor_control_mode
+        self._motor_control_mode = motor0_control_mode
 
         # Vectorize motors into to improve performance
-        self._motor_joint_names = [
-            motor_config.joint_name for motor_config in motor_configs
-        ]
-        self._kp = np.array([motor_config.kp for motor_config in motor_configs])
-        self._kd = np.array([motor_config.kd for motor_config in motor_configs])
+        # TODO: We are accessing 'protected' variables directly like
+        # "_name" from MotorModel.
+        # We should decide if we want to do this through properties like in MotorGroup.
+        self._motor_joint_names = [motor._name for motor in motors]
+        self._kps = np.array([motor._kp for motor in motors])
+        self._kds = np.array([motor._kd for motor in motors])
         self._strength_ratios = np.ones(self._num_motors)
-        self._max_torque = np.array(
-            [motor_config.max_torque for motor_config in motor_configs]
-        )
-        self._min_torque = np.array(
-            [motor_config.min_torque for motor_config in motor_configs]
-        )
-        self._max_velocity = np.array(
-            [motor_config.max_velocity for motor_config in motor_configs]
-        )
-        self._min_velocity = np.array(
-            [motor_config.min_velocity for motor_config in motor_configs]
-        )
-        self._max_position = np.array(
-            [motor_config.max_position for motor_config in motor_configs]
-        )
-        self._min_position = np.array(
-            [motor_config.min_position for motor_config in motor_configs]
-        )
+        self._min_positions = np.array([motor._min_position for motor in motors])
+        self._max_positions = np.array([motor._max_position for motor in motors])
+        self._min_velocities = np.array([motor._min_velocity for motor in motors])
+        self._max_velocities = np.array([motor._max_velocity for motor in motors])
+        self._min_torques = np.array([motor._min_torque for motor in motors])
+        self._max_torques = np.array([motor._max_torque for motor in motors])
 
     @property
-    def kp(self):
-        return self._kp
+    def kps(self):
+        return self._kps
 
-    @kp.setter
-    def kp(self, value: Union[float, Sequence[float]]):
-        self._kp = np.ones(self._num_motors) * value
+    @kps.setter
+    def kps(self, value: Union[float, Sequence[float]]):
+        self._kps = np.ones(self._num_motors) * value
 
     @property
-    def kd(self):
-        return self._kd
+    def kds(self):
+        return self._kds
 
-    @kd.setter
-    def kd(self, value: Union[float, Sequence[float]]):
-        self._kd = np.ones(self._num_motors) * value
+    @kds.setter
+    def kds(self, value: Union[float, Sequence[float]]):
+        self._kds = np.ones(self._num_motors) * value
 
     @property
     def strength_ratios(self):
@@ -99,7 +127,7 @@ class MotorGroup:
         self, desired_torque: Sequence[float], current_motor_velocity: Sequence[float]
     ):
         del current_motor_velocity  # unused
-        return np.clip(desired_torque, self._min_torque, self._max_torque)
+        return np.clip(desired_torque, self._min_torques, self._max_torques)
 
     def convert_to_torque(
         self,
@@ -114,12 +142,12 @@ class MotorGroup:
         if motor_control_mode == MotorControlMode.POSITION:
             desired_angle = motor_commands.copy()
             desired_velocity = np.zeros(self._num_motors)
-            desired_torque = self._kp * (desired_angle - current_angle) + self._kd * (
+            desired_torque = self._kps * (desired_angle - current_angle) + self._kds * (
                 desired_velocity - current_velocity
             )
         elif motor_control_mode == MotorControlMode.TORQUE:
             desired_torque = motor_commands.copy()
-        else:
+        else:  # HYBRID case
             desired_angle = motor_commands[POSITION_INDEX::COMMAND_DIMENSION]
             kp = motor_commands[KP_INDEX::COMMAND_DIMENSION]
             desired_velocity = motor_commands[VELOCITY_INDEX::COMMAND_DIMENSION]
