@@ -1,43 +1,32 @@
 """Base class for all robots."""
+from typing import Any, Tuple
 import numpy as np
-import pybullet_data
 
 from quadsim.robots import motor_group
+from quadsim.robots.motors import MotorGroup
 
 
 class Robot:
     """Robot Base."""
 
-    def __init__(self, pybullet_client, config) -> None:
-        """Constructs a base robot and resets it to the initial states.
+    def __init__(
+        self,
+        pybullet_client: Any = None,
+        motors: Tuple[MotorGroup, ...] = None,
+        urdf_path: str = None,
+        # see simulator.py for 'rack' related config fields
 
-        Args:
-          pybullet_client: The instance of BulletClient to manage different
-            simulations.
-          motors: A list of motor models.
-          sensors: A list of sensor models.
-          on_rack: Whether the robot is hanging in mid-air or not. Used for debugging.
+    ) -> None:
+        """Constructs a base robot and resets it to the initial states.
+        TODO
         """
         self._pybullet_client = pybullet_client
-        self.config = config
         self._motor_group = motor_group.MotorGroup(self.config.motors)
-        self._setup_simulator()
         self._load_robot_urdf()
         self._num_motors = self._motor_group.num_motors
         self._motor_torques = None
         self._step_counter = 0
         self.reset()
-
-    def _setup_simulator(self) -> None:
-        """Sets up the pybullet simulator based on robot config."""
-        p = self._pybullet_client
-        sim_config = self.config.simulation
-        p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        p.setPhysicsEngineParameter(
-            numSolverIterations=sim_config.num_solver_iterations
-        )
-        p.setTimeStep(sim_config.timestep)
-        p.setGravity(0.0, 0.0, -9.8)
 
     def _load_robot_urdf(self) -> None:
         p = self._pybullet_client

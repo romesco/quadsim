@@ -2,7 +2,7 @@
 """
 import enum
 import numpy as np
-from typing import Sequence, Union, Optional
+from typing import Union, Optional, Tuple, Sequence
 
 POSITION_INDEX = 0
 KP_INDEX = 1
@@ -68,7 +68,7 @@ class MotorGroup:
 
     def __init__(
         self,
-        motors: Sequence[MotorModel]
+        motors: Tuple[MotorModel, ...]
     ) -> None:
 
         self._motors = motors
