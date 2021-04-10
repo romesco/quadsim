@@ -4,6 +4,7 @@ if __name__ == '__main__':
     motor1 = MotorModel(
         name="FR_hip_joint",
         motor_control_mode=MotorControlMode.POSITION,
+        init_motor_angle=0.0,
         min_position=-0.802851455917,
         max_position=0.802851455917,
         min_velocity=-16,
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     motor2 = MotorModel(
         name="FR_upper_joint",
         motor_control_mode=MotorControlMode.POSITION,
+        init_motor_angle=0.0,
         min_position=-0.802851455917,
         max_position=0.802851455917,
         min_velocity=-16,

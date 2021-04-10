@@ -27,7 +27,7 @@ class MotorModel:
     To accurately model the motor behaviors, this class converts all motor
     commands into torques, which could be send directly to the simulator.
     Right now, 3 motor control modes are supported:
-    - POSITION: performs joint-level PD control
+    - POSITION: performs joint-level PD control  (rad)
     - TORQUE: directly takes in motor torque command
     - HYBRID: takes in a 5-d tuple (pos, kp, vel, kd, torque), and output
       torque is a sum of PD torque and additional torque.
@@ -36,6 +36,7 @@ class MotorModel:
         self,
         name: str = None,
         motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
+        init_position: float = 0.0,
         min_position: float = 0.0,
         max_position: float = 0.0,
         min_velocity: float = 0.0,
@@ -48,6 +49,7 @@ class MotorModel:
 
         self._name = name
         self._motor_control_mode = motor_control_mode
+        self._init_position = init_position
         self._min_position = min_position
         self._max_position = max_position
         self._min_velocity = min_velocity
@@ -92,6 +94,7 @@ class MotorGroup:
         self._kps = np.array([motor._kp for motor in motors])
         self._kds = np.array([motor._kd for motor in motors])
         self._strength_ratios = np.ones(self._num_motors)
+        self._init_positions = np.array([motor._init_position for motor in motors])
         self._min_positions = np.array([motor._min_position for motor in motors])
         self._max_positions = np.array([motor._max_position for motor in motors])
         self._min_velocities = np.array([motor._min_velocity for motor in motors])

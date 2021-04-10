@@ -2,8 +2,8 @@
 from typing import Any, Tuple
 import numpy as np
 
-from quadsim.robots import motor_group
-from quadsim.robots.motors import MotorGroup
+from quadsim.simulator import SimulatorConf
+from quadsim.robots.motors import MotorGroup, MotorControlMode
 
 
 class Robot:
@@ -12,28 +12,35 @@ class Robot:
     def __init__(
         self,
         pybullet_client: Any = None,
-        motors: Tuple[MotorGroup, ...] = None,
+        sim_conf: SimulatorConf = None,
         urdf_path: str = None,
+        motors: Tuple[MotorGroup, ...] = None,
+        base_joint_names: Tuple[str, ...] = None,
+        foot_joint_names: Tuple[str, ...] = None,
         # see simulator.py for 'rack' related config fields
 
     ) -> None:
         """Constructs a base robot and resets it to the initial states.
         TODO
         """
+        self._sim_conf = sim_conf
         self._pybullet_client = pybullet_client
-        self._motor_group = motor_group.MotorGroup(self.config.motors)
-        self._load_robot_urdf()
+        self._motor_group = motors
+        self._base_joint_names = base_joint_names
+        self._foot_joint_names = foot_joint_names
+        self._load_robot_urdf(urdf_path)
         self._num_motors = self._motor_group.num_motors
         self._motor_torques = None
         self._step_counter = 0
         self.reset()
 
-    def _load_robot_urdf(self) -> None:
+    def _load_robot_urdf(self, urdf_path: str) -> None:
         p = self._pybullet_client
 
-        if self.config.on_rack:
+        if self._sim_conf.on_rack:
             self.quadruped = p.loadURDF(
-                self.config.urdf_path, self.config.init_rack_position
+                urdf_path,
+                self._sim_conf.init_rack_position
             )
             self.rack_constraint = p.createConstraint(
                 parentBodyUniqueId=self.quadruped,
@@ -43,12 +50,13 @@ class Robot:
                 jointType=self._pybullet_client.JOINT_FIXED,
                 jointAxis=[0, 0, 0],
                 parentFramePosition=[0, 0, 0],
-                childFramePosition=self.config.init_rack_position,
+                childFramePosition=self._sim_conf.init_rack_position,
                 childFrameOrientation=[0.0, 0.0, 0.0, 1],
             )
         else:
             self.quadruped = p.loadURDF(
-                self.config.urdf_path, self.config.init_position
+                urdf_path,
+                self._sim_conf.init_position
             )
 
         self._build_urdf_ids()
@@ -63,15 +71,15 @@ class Robot:
         self._motor_joint_ids = []
         self._foot_link_ids = []
 
-        num_joints = self._pybullet_client.getNumJoints(self.quadruped)
-        for joint_id in range(num_joints):
+        # num_joints = self._pybullet_client.getNumJoints(self.quadruped)
+        for joint_id in range(self._num_motors):
             joint_info = self._pybullet_client.getJointInfo(self.quadruped, joint_id)
             joint_name = joint_info[1].decode("UTF-8")
-            if joint_name in self.config.base_joint_names:
+            if joint_name in self._base_joint_names:
                 self._chassis_link_ids.append(joint_id)
             elif joint_name in self._motor_group.motor_joint_names:
                 self._motor_joint_ids.append(joint_id)
-            elif joint_name in self.config.foot_joint_names:
+            elif joint_name in self._foot_joint_names:
                 self._foot_link_ids.append(joint_id)
 
     def reset(self, hard_reset: bool = False) -> None:
@@ -81,17 +89,18 @@ class Robot:
             self._load_robot_urdf()
         else:
             init_position = (
-                self.config.init_rack_position
-                if self.config.on_rack
-                else self.config.init_position
+                self._sim_conf.init_rack_position
+                if self._sim_conf.on_rack
+                else self._sim_conf.init_position
             )
             self._pybullet_client.resetBasePositionAndOrientation(
                 self.quadruped, init_position, [0.0, 0.0, 0.0, 1.0]
             )
 
         # Remove velocity and force constraint on all joints
-        num_joints = self._pybullet_client.getNumJoints(self.quadruped)
-        for joint_id in range(num_joints):
+        # num_joints = self._pybullet_client.getNumJoints(self.quadruped)
+        # TODO: ^ is this different than:
+        for joint_id in range(self._num_motors):
             self._pybullet_client.setJointMotorControl2(
                 bodyIndex=self.quadruped,
                 jointIndex=(joint_id),
@@ -101,21 +110,22 @@ class Robot:
             )
 
         # Set motors to the initial position
+        # TODO: these should be set already when they are instantiated?
         for i in range(len(self._motor_joint_ids)):
             self._pybullet_client.resetJointState(
                 self.quadruped,
                 self._motor_joint_ids[i],
-                self.config.init_motor_angles[i],
+                self._motor_group.init_positions[i],
                 targetVelocity=0,
             )
 
         # Steps the robot with position command
         num_reset_steps = int(
-            self.config.simulation.reset_time / self.config.simulation.timestep
+            self._sim_conf.reset_time / self._sim_conf.timestep
         )
         for _ in range(num_reset_steps):
             self.step(
-                self.config.init_motor_angles, motor_group.MotorControlMode.POSITION
+                self._motor_group.init_positions, MotorControlMode.POSITION
             )
         self._step_counter = 0
 
@@ -133,7 +143,7 @@ class Robot:
 
     def step(self, action, motor_control_mode=None) -> None:
         self._step_counter += 1
-        for _ in range(self.config.simulation.action_repeat):
+        for _ in range(self._sim_conf.action_repeat):
             self._apply_action(action, motor_control_mode)
             self._pybullet_client.stepSimulation()
 
@@ -204,7 +214,7 @@ class Robot:
 
     @property
     def control_timestep(self):
-        return self.config.simulation.timestep * self.config.simulation.action_repeat
+        return self._sim_conf.timestep * self._sim_conf.action_repeat
 
     @property
     def time_since_reset(self):
