@@ -1,8 +1,8 @@
 """ Implements models for single DC-DC motors and compositional motor groups.
 """
 import enum
-import numpy as np
 from typing import Union, Optional, Tuple, Sequence
+import numpy as np
 
 POSITION_INDEX = 0
 KP_INDEX = 1
@@ -125,6 +125,14 @@ class MotorGroup:
     @strength_ratios.setter
     def strength_ratios(self, value: Union[float, Sequence[float]]):
         self._strength_ratios = np.ones(self._num_motors) * value
+
+    @property
+    def init_positions(self):
+        return self._init_positions
+
+    @init_positions.setter
+    def init_positions(self, value: Union[float, Sequence[float]]):
+        self._init_positions = value
 
     def _clip_torques(
         self, desired_torque: Sequence[float], current_motor_velocity: Sequence[float]

@@ -2,6 +2,8 @@
 from typing import Any, Tuple
 import numpy as np
 
+import pybullet_data
+
 from quadsim.simulator import SimulatorConf
 from quadsim.robots.motors import MotorGroup, MotorControlMode
 
@@ -28,14 +30,15 @@ class Robot:
         self._motor_group = motors
         self._base_joint_names = base_joint_names
         self._foot_joint_names = foot_joint_names
-        self._load_robot_urdf(urdf_path)
         self._num_motors = self._motor_group.num_motors
         self._motor_torques = None
+        self._load_robot_urdf(urdf_path)
         self._step_counter = 0
         self.reset()
 
     def _load_robot_urdf(self, urdf_path: str) -> None:
         p = self._pybullet_client
+        p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
         if self._sim_conf.on_rack:
             self.quadruped = p.loadURDF(
@@ -71,8 +74,8 @@ class Robot:
         self._motor_joint_ids = []
         self._foot_link_ids = []
 
-        # num_joints = self._pybullet_client.getNumJoints(self.quadruped)
-        for joint_id in range(self._num_motors):
+        num_joints = self._pybullet_client.getNumJoints(self.quadruped)
+        for joint_id in range(num_joints):
             joint_info = self._pybullet_client.getJointInfo(self.quadruped, joint_id)
             joint_name = joint_info[1].decode("UTF-8")
             if joint_name in self._base_joint_names:
@@ -97,10 +100,8 @@ class Robot:
                 self.quadruped, init_position, [0.0, 0.0, 0.0, 1.0]
             )
 
-        # Remove velocity and force constraint on all joints
-        # num_joints = self._pybullet_client.getNumJoints(self.quadruped)
-        # TODO: ^ is this different than:
-        for joint_id in range(self._num_motors):
+        num_joints = self._pybullet_client.getNumJoints(self.quadruped)
+        for joint_id in range(num_joints):
             self._pybullet_client.setJointMotorControl2(
                 bodyIndex=self.quadruped,
                 jointIndex=(joint_id),
@@ -115,7 +116,7 @@ class Robot:
             self._pybullet_client.resetJointState(
                 self.quadruped,
                 self._motor_joint_ids[i],
-                self._motor_group.init_positions[i],
+                self._motor_group._init_positions[i],
                 targetVelocity=0,
             )
 

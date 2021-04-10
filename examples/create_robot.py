@@ -1,9 +1,10 @@
+import pybullet
+import pybullet_data
+from pybullet_utils import bullet_client
+
 from quadsim.robots.motors import MotorControlMode, MotorModel, MotorGroup
 from quadsim.robots.robot import Robot
 from quadsim.simulator import SimulatorConf
-
-import pybullet
-from pybullet_utils import bullet_client
 
 if __name__ == '__main__':
 
@@ -11,12 +12,14 @@ if __name__ == '__main__':
         show_gui=False,
         on_rack=True,
     )
+    sim_conf.init_position = list(sim_conf.init_position)
 
     # Set up pybullet client
     if sim_conf.show_gui:
         p = bullet_client.BulletClient(connection_mode=pybullet.GUI)
     else:
         p = bullet_client.BulletClient(connection_mode=pybullet.DIRECT)
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
     motor1 = MotorModel(
         name="FR_hip_joint",
@@ -68,11 +71,9 @@ if __name__ == '__main__':
     )
 
     # Print out all currently set instance attributes
-    for attr, val in motor_group.__dict__.items():
+    for attr, val in robot.__dict__.items():
         print(attr, '=', val)
-        if attr == '_motors':
-            for motor_num, motor in enumerate(val):
-                print(f'===Motor {motor_num+1}:')
-                for bttr, vbl in motor.__dict__.items():
-                    print(bttr, '=', vbl)
-            print('===MotorGroup:')
+        if attr == '_motor_group':
+            print("======MotorGroup:")
+            for bttr, vbl in val.__dict__.items():
+                print(bttr, '=', vbl)
