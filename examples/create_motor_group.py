@@ -4,7 +4,7 @@ if __name__ == '__main__':
     motor1 = MotorModel(
         name="FR_hip_joint",
         motor_control_mode=MotorControlMode.POSITION,
-        init_motor_angle=0.0,
+        init_position=0.0,
         min_position=-0.802851455917,
         max_position=0.802851455917,
         min_velocity=-16,
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     motor2 = MotorModel(
         name="FR_upper_joint",
         motor_control_mode=MotorControlMode.POSITION,
-        init_motor_angle=0.0,
+        init_position=0.0,
         min_position=-0.802851455917,
         max_position=0.802851455917,
         min_velocity=-16,
@@ -35,3 +35,12 @@ if __name__ == '__main__':
             motor2,
         ]
     )
+    # Print out all currently set instance attributes
+    for attr, val in motor_group.__dict__.items():
+        print(attr, '=', val)
+        if attr == '_motors':
+            for motor_num, motor in enumerate(val):
+                print(f'===Motor {motor_num+1}:')
+                for bttr, vbl in motor.__dict__.items():
+                    print(bttr, '=', vbl)
+            print('===MotorGroup:')
