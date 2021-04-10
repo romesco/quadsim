@@ -17,8 +17,8 @@ class Robot:
         sim_conf: SimulatorConf = None,
         urdf_path: str = None,
         motors: Tuple[MotorGroup, ...] = None,
-        base_joint_names: Tuple[str, ...] = None,
-        foot_joint_names: Tuple[str, ...] = None,
+        base_joint_names: Tuple[str, ...] = (),
+        foot_joint_names: Tuple[str, ...] = (),
         # see simulator.py for 'rack' related config fields
 
     ) -> None:
