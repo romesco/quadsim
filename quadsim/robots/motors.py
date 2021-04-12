@@ -36,6 +36,7 @@ class MotorModel:
         self,
         name: str = None,
         motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
+        # TODO: add to docs what this is, e.g. rotational position in rads
         init_position: float = 0.0,
         min_position: float = 0.0,
         max_position: float = 0.0,
@@ -68,6 +69,9 @@ class MotorGroup:
     which is a computationally advantageous. At least 4x faster.
     """
 
+    # TODO: support instantiation by lists of values:
+    # e.g. instead of creating motors and adding them to group to instantiate,
+    # directly instantiate MotorGroup with 'motor_joint_names=...', ..., '_kds=...'
     def __init__(
         self,
         motors: Tuple[MotorModel, ...]

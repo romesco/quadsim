@@ -24,8 +24,6 @@ def main():
         on_rack=True,
     )
     print(sim)
-    import ipdb
-    ipdb.set_trace()
 
     # robot = Robot(p, FLAGS.robot_config)
     # for _ in range(10000):

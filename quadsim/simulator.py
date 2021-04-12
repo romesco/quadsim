@@ -18,6 +18,8 @@ class SimulatorConf:
     action_repeat: int = 1
     reset_time: float = 3
     num_solver_iterations: int = 30
+    # TODO: discuss why init_position is in the simulator
+    # TODO: add to docs what this is, e.g. vector in R^3
     init_position: Tuple[float, float, float] = (0.0, 0.0, 0.32)
     init_rack_position: Tuple[float, float, float] = (0.0, 0.0, 1)
     on_rack: bool = False
