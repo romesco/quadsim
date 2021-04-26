@@ -1,11 +1,13 @@
 """Base class for all robots."""
-from typing import Any, Tuple
-import numpy as np
+from typing import Any
+from typing import Tuple
 
+import numpy as np
 import pybullet_data
 
+from quadsim.robots.motors import MotorControlMode
+from quadsim.robots.motors import MotorGroup
 from quadsim.simulator import SimulatorConf
-from quadsim.robots.motors import MotorGroup, MotorControlMode
 
 
 class Robot:
@@ -17,10 +19,8 @@ class Robot:
         sim_conf: SimulatorConf = None,
         urdf_path: str = None,
         motors: Tuple[MotorGroup, ...] = None,
-        base_joint_names: Tuple[str, ...] = None,
-        foot_joint_names: Tuple[str, ...] = None,
-        # see simulator.py for 'rack' related config fields
-
+        base_joint_names: Tuple[str, ...] = (),
+        foot_joint_names: Tuple[str, ...] = (),
     ) -> None:
         """Constructs a base robot and resets it to the initial states.
         TODO
@@ -30,21 +30,22 @@ class Robot:
         self._motor_group = motors
         self._base_joint_names = base_joint_names
         self._foot_joint_names = foot_joint_names
-        self._num_motors = self._motor_group.num_motors
+        self._num_motors = self._motor_group.num_motors if self._motor_group else 0
         self._motor_torques = None
         self._load_robot_urdf(urdf_path)
         self._step_counter = 0
         self.reset()
 
     def _load_robot_urdf(self, urdf_path: str) -> None:
+        # TODO: how do we want to check for missing attributes when not using configs?
+        # One way to do it:
+        if not self._pybullet_client:
+            raise AttributeError("No pybullet client specified!")
         p = self._pybullet_client
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
         if self._sim_conf.on_rack:
-            self.quadruped = p.loadURDF(
-                urdf_path,
-                self._sim_conf.init_rack_position
-            )
+            self.quadruped = p.loadURDF(urdf_path, self._sim_conf.init_rack_position)
             self.rack_constraint = p.createConstraint(
                 parentBodyUniqueId=self.quadruped,
                 parentLinkIndex=-1,
@@ -57,10 +58,7 @@ class Robot:
                 childFrameOrientation=[0.0, 0.0, 0.0, 1],
             )
         else:
-            self.quadruped = p.loadURDF(
-                urdf_path,
-                self._sim_conf.init_position
-            )
+            self.quadruped = p.loadURDF(urdf_path, self._sim_conf.init_position)
 
         self._build_urdf_ids()
 
@@ -121,13 +119,9 @@ class Robot:
             )
 
         # Steps the robot with position command
-        num_reset_steps = int(
-            self._sim_conf.reset_time / self._sim_conf.timestep
-        )
+        num_reset_steps = int(self._sim_conf.reset_time / self._sim_conf.timestep)
         for _ in range(num_reset_steps):
-            self.step(
-                self._motor_group.init_positions, MotorControlMode.POSITION
-            )
+            self.step(self._motor_group.init_positions, MotorControlMode.POSITION)
         self._step_counter = 0
 
     def _apply_action(self, action, motor_control_mode=None) -> None:
