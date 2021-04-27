@@ -1,7 +1,8 @@
 """ A convenience class for configuring and instantiating the simulator (pybullet).
 """
-from typing import Tuple
 from dataclasses import dataclass
+from typing import Any
+from typing import Tuple
 
 import pybullet
 import pybullet_data
@@ -11,9 +12,15 @@ from pybullet_utils import bullet_client
 @dataclass
 class SimulatorConf:
     """Simulator configuration dataclass.
+    connection_mode:
+        `None` connects to an existing simulation or, if fails, creates a
+          new headless simulation,
+        `pybullet.GUI` creates a new simulation with a GUI,
+        `pybullet.DIRECT` creates a headless simulation,
+        `pybullet.SHARED_MEMORY` connects to an existing simulation.
     """
 
-    show_gui: bool = False
+    connection_mode: Any = pybullet.GUI
     timestep: float = 0.002
     action_repeat: int = 1
     reset_time: float = 3
@@ -55,9 +62,7 @@ class Simulator:
             p = bullet_client.BulletClient(connection_mode=pybullet.DIRECT)
 
         # Set Simulator Parameters
-        p.setPhysicsEngineParameter(
-            numSolverIterations=num_solver_iterations
-        )
+        p.setPhysicsEngineParameter(numSolverIterations=num_solver_iterations)
         p.setTimeStep(timestep)
 
         # Initialize world (once)

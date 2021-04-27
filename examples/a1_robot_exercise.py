@@ -1,14 +1,17 @@
 """Example of running A1 robot with position control.
 
-To run the example with gui:
-python a1_robot_exercise.py gui=true
+To run:
+python a1_robot_exercise.py
 """
+import time
 
 import numpy as np
-# import time
+import pybullet
+import pybullet_data
+from pybullet_utils import bullet_client
 
-from quadsim.simulator import Simulator
-# from quadsim.robots.robot import Robot
+from quadsim.robots.a1 import A1
+from quadsim.simulator import SimulatorConf
 
 
 def get_action(t):
@@ -19,18 +22,22 @@ def get_action(t):
 
 
 def main():
-    sim = Simulator(
-        show_gui=False,
+    sim_conf = SimulatorConf(
+        connection_mode=pybullet.DIRECT,
         on_rack=True,
     )
-    print(sim)
 
-    # robot = Robot(p, FLAGS.robot_config)
-    # for _ in range(10000):
-    #     action = get_action(robot.time_since_reset)
-    #     robot.step(action)
-    #     time.sleep(0.002)
-    #     print(robot.base_orientation_rpy)
+    p = bullet_client.BulletClient(connection_mode=sim_conf.connection_mode)
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())
+    p.loadURDF("plane.urdf")
+
+    robot = A1(pybullet_client=p, sim_conf=sim_conf)
+
+    for _ in range(10000):
+        action = get_action(robot.time_since_reset)
+        robot.step(action)
+        time.sleep(0.002)
+        print(robot.base_orientation_rpy)
 
 
 if __name__ == "__main__":
