@@ -5,8 +5,6 @@ from textwrap import dedent
 import nox
 from nox.sessions import Session
 
-# import nox_poetry.patch  # noqa
-
 project = "quadsim"
 package = "quadsim"
 package_path = f"{project}/{package}"
@@ -103,7 +101,6 @@ def tests(session: Session) -> None:
     """Run the test suite."""
     session.install(".")
     session.install(*test_reqs)
-    # session.run("poetry", "install", external=True)
     session.run("pip", "install", ".[dev]")
 
     try:

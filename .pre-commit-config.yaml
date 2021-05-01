@@ -7,6 +7,7 @@ repos:
         language: system
         types: [python]
         require_serial: true
+        exclude: ^data/
       - id: check-added-large-files
         name: Check for added large files
         entry: check-added-large-files
@@ -16,30 +17,35 @@ repos:
         entry: check-yaml
         language: system
         types: [yaml]
+        exclude: ^data/
       - id: flake8
         name: flake8
         entry: flake8
         language: system
         types: [python]
         require_serial: true
+        exclude: ^data/
       - id: end-of-file-fixer
         name: Fix End of Files
         entry: end-of-file-fixer
         language: system
         types: [text]
         stages: [commit, push, manual]
+        exclude: ^data/
       - id: reorder-python-imports
         name: Reorder python imports
         entry: reorder-python-imports
         language: system
         types: [python]
         args: [--application-directories=quadsim]
+        exclude: ^data/
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
         entry: trailing-whitespace-fixer
         language: system
         types: [text]
         stages: [commit, push, manual]
+        exclude: ^data/
         # Adding a new python hook?
         # For this repo, ensure:
         # its in this 'repo: local' section
@@ -48,3 +54,4 @@ repos:
     rev: v2.1.2
     hooks:
       - id: prettier
+        exclude: ^data/
