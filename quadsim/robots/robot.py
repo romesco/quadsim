@@ -11,7 +11,21 @@ from quadsim.simulator import SimulatorConf
 
 
 class Robot:
-    """Robot Base."""
+    """Robot Base
+    A `Robot` requires access to a pre-instantiated `pybullet_client` and information
+    about how the simulator was configured.
+
+    A `Robot` is composed of joints which correspond to motors. For the most flexibility,
+    we choose to pass motor objects to the robot when it is constructed. This allows for
+    easy config-driven instantiation of different robot morphologies.
+
+    Motors are passed as a collection of another collection of motors. A collection of
+    motors at the lowest level is implemented in a `MotorGroup`. This means a robot
+    can support the following configurations:
+    1 Motor Robot: [ [ Arm Motor ] ]
+    1 MotorGroup Robot: [ [ Arm Motor1, Arm Motor2 ] ]
+    2 MotorGroup Robot: [ [ Leg Motor1, Leg Motor2 ], [ Arm Motor1, Arm Motor2 ] ]
+    """
 
     def __init__(
         self,

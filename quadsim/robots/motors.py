@@ -1,7 +1,11 @@
 """ Implements models for single DC-DC motors and compositional motor groups.
 """
 import enum
-from typing import Union, Optional, Tuple, Sequence
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
+
 import numpy as np
 
 POSITION_INDEX = 0
@@ -21,17 +25,23 @@ class MotorControlMode(enum.Enum):
     HYBRID = 2
 
 
+# NOTE: Until functionality is added to MotorModel,
+# it is effectively equivalent to a `dataclass`.
 class MotorModel:
     """Implements a simple DC motor model for simulation.
 
-    To accurately model the motor behaviors, this class converts all motor
-    commands into torques, which could be send directly to the simulator.
+    `MotorModel` describes a particular individual motor and can be useful
+    for specifying physical characteristics that a singular motor might have.
+
+    To accurately model the motor behaviors, the `MotorGroup` class converts all motor
+    commands into torques, which can be sent directly to the simulator.
     Right now, 3 motor control modes are supported:
     - POSITION: performs joint-level PD control  (rad)
     - TORQUE: directly takes in motor torque command
     - HYBRID: takes in a 5-d tuple (pos, kp, vel, kd, torque), and output
       torque is a sum of PD torque and additional torque.
     """
+
     def __init__(
         self,
         name: str = None,
@@ -60,22 +70,27 @@ class MotorModel:
         self._kp = kp
         self._kd = kd
 
-    def do_something(self) -> None:
+    def inject_noise(self) -> None:
+        """Stub to show potential functionality at `MotorModel` abstraction.
+        This method might specify a noise model and then use it when initializing the motor.
+        """
         raise NotImplementedError()
 
 
 class MotorGroup:
-    """A group of motors. This abstraction level allows vectorized motor control
+    """A group of motors.
+    This abstraction level allows vectorized motor control
     which is a computationally advantageous. At least 4x faster.
+
+    For the time being, all functionality is provided in `MotorGroup`. Please
+    note that `MotorGroup` does not change the state of attributes in each
+    `MotorModel` it is initialized with.
     """
 
     # TODO: support instantiation by lists of values:
     # e.g. instead of creating motors and adding them to group to instantiate,
     # directly instantiate MotorGroup with 'motor_joint_names=...', ..., '_kds=...'
-    def __init__(
-        self,
-        motors: Tuple[MotorModel, ...]
-    ) -> None:
+    def __init__(self, motors: Tuple[MotorModel, ...] = ()) -> None:
 
         self._motors = motors
         self._num_motors = len(motors)
@@ -90,7 +105,6 @@ class MotorGroup:
                 )
         self._motor_control_mode = motor0_control_mode
 
-        # Vectorize motors into to improve performance
         # TODO: We are accessing 'protected' variables directly like
         # "_name" from MotorModel.
         # We should decide if we want to do this through properties like in MotorGroup.
