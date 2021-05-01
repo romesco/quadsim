@@ -2,11 +2,13 @@ import pybullet
 import pybullet_data
 from pybullet_utils import bullet_client
 
-from quadsim.robots.motors import MotorControlMode, MotorModel, MotorGroup
+from quadsim.robots.motors import MotorControlMode
+from quadsim.robots.motors import MotorGroup
+from quadsim.robots.motors import MotorModel
 from quadsim.robots.robot import Robot
 from quadsim.simulator import SimulatorConf
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     sim_conf = SimulatorConf(
         show_gui=False,
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     robot = Robot(
         pybullet_client=p,
         sim_conf=sim_conf,
-        urdf_path='a1/a1.urdf',
+        urdf_path="a1/a1.urdf",
         motors=motor_group,
         base_joint_names=[],
         foot_joint_names=[
@@ -72,8 +74,8 @@ if __name__ == '__main__':
 
     # Print out all currently set instance attributes
     for attr, val in robot.__dict__.items():
-        print(attr, '=', val)
-        if attr == '_motor_group':
+        print(attr, "=", val)
+        if attr == "_motor_group":
             print("======MotorGroup:")
             for bttr, vbl in val.__dict__.items():
-                print(bttr, '=', vbl)
+                print(bttr, "=", vbl)

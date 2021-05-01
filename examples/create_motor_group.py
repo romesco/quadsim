@@ -1,6 +1,8 @@
-from quadsim.robots.motors import MotorControlMode, MotorModel, MotorGroup
+from quadsim.robots.motors import MotorControlMode
+from quadsim.robots.motors import MotorGroup
+from quadsim.robots.motors import MotorModel
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     motor1 = MotorModel(
         name="FR_hip_joint",
         motor_control_mode=MotorControlMode.POSITION,
@@ -37,10 +39,10 @@ if __name__ == '__main__':
     )
     # Print out all currently set instance attributes
     for attr, val in motor_group.__dict__.items():
-        print(attr, '=', val)
-        if attr == '_motors':
+        print(attr, "=", val)
+        if attr == "_motors":
             for motor_num, motor in enumerate(val):
-                print(f'===Motor {motor_num+1}:')
+                print(f"===Motor {motor_num+1}:")
                 for bttr, vbl in motor.__dict__.items():
-                    print(bttr, '=', vbl)
-            print('===MotorGroup:')
+                    print(bttr, "=", vbl)
+            print("===MotorGroup:")
