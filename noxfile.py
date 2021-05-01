@@ -79,6 +79,8 @@ def precommit(session: Session) -> None:
     """Lint using pre-commit."""
     args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
     session.install(
+        "--constraint=requirements/dev.txt",
+        # session.install(
         # when adding a new hook, ensure:
         # 1. add dep to dev_requirements in setup.py
         # 2. the package name is added here (so that nox installs it to virtualenv)
