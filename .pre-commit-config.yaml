@@ -1,57 +1,32 @@
+exclude: |
+    (?x)(
+        ^data/|
+        ^output/|
+    )
 repos:
-  - repo: local
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
     hooks:
       - id: black
-        name: black
-        entry: black
-        language: system
-        types: [python]
-        require_serial: true
-        exclude: ^data/
-      - id: check-added-large-files
-        name: Check for added large files
-        entry: check-added-large-files
-        language: system
-      - id: check-yaml
-        name: Check Yaml
-        entry: check-yaml
-        language: system
-        types: [yaml]
-        exclude: ^data/
-      - id: flake8
-        name: flake8
-        entry: flake8
-        language: system
-        types: [python]
-        require_serial: true
-        exclude: ^data/
-      - id: end-of-file-fixer
-        name: Fix End of Files
-        entry: end-of-file-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
-        exclude: ^data/
-      - id: reorder-python-imports
-        name: Reorder python imports
-        entry: reorder-python-imports
-        language: system
-        types: [python]
-        args: [--application-directories=quadsim]
-        exclude: ^data/
+        language_version: python3
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
       - id: trailing-whitespace
-        name: Trim Trailing Whitespace
-        entry: trailing-whitespace-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
-        exclude: ^data/
-        # Adding a new python hook?
-        # For this repo, ensure:
-        # its in this 'repo: local' section
-        # language: system
+      - id: check-added-large-files
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.9.1
+    hooks:
+      - id: flake8
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.5.0
+    hooks:
+      - id: reorder-python-imports
+        args: [--application-directories=quadsim]
   - repo: https://github.com/prettier/pre-commit
     rev: v2.1.2
     hooks:
       - id: prettier
-        exclude: ^data/
