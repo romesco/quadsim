@@ -59,9 +59,8 @@ def test_torque_control(
     np.testing.assert_allclose(observed_torque, expected_observed_torque)
 
 
-# TODO: Complete testing for MotorGroup / Motor functionality.
+# TODO(yxyang) Complete testing for MotorGroup / Motor functionality.
 # We have partially implemented these tests, but there are still some commented lines to be# converted.
-# assignees: yxyang
 
 #    @parameterized.parameters(
 #        [
