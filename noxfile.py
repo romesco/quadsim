@@ -1,6 +1,5 @@
 """Nox sessions."""
 from pathlib import Path
-from textwrap import dedent
 
 import nox
 from nox.sessions import Session
@@ -22,10 +21,10 @@ nox.options.sessions = (
     "tests",
 )
 
+
 @nox.session(name="pre-commit", python="3.9")
 def precommit(session: Session) -> None:
     """Lint using pre-commit."""
-    args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
     session.install(
         "black",
         "flake8",
@@ -35,8 +34,7 @@ def precommit(session: Session) -> None:
         "pre-commit-hooks",
         "reorder-python-imports",
     )
-    session.run("pre-commit")
-
+    session.run("pre-commit", "run", "--all-files", "--show-diff-on-failure")
 
 
 @nox.session(python=python_versions)
