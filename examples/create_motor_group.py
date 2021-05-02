@@ -41,3 +41,8 @@ if __name__ == "__main__":
                 for bttr, vbl in motor.__dict__.items():
                     print(bttr, "=", vbl)
             print("===MotorGroup:")
+    """
+    TODO: Add print functionality to MotorGroup
+    BODY: Calling `print(motor_group)` or `pprint(motor_group)` iterates through
+    BODY: the motors in `motor_group`, displaying each of their parameters.
+    """
