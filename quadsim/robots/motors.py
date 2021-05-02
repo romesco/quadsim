@@ -42,11 +42,12 @@ class MotorModel:
       torque is a sum of PD torque and additional torque.
     """
 
+    # TODO(yxyang): Complete documentation of motors with description of units (e.g. rads/s etc.)
+
     def __init__(
         self,
         name: str = None,
         motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
-        # TODO(yxyang): add to docs what this is, e.g. rotational position in rads
         init_position: float = 0.0,
         min_position: float = 0.0,
         max_position: float = 0.0,
