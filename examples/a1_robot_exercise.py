@@ -22,10 +22,7 @@ def get_action(t):
 
 
 def main():
-    sim_conf = SimulatorConf(
-        connection_mode=pybullet.DIRECT,
-        on_rack=True,
-    )
+    sim_conf = SimulatorConf(connection_mode=pybullet.DIRECT, on_rack=True,)
 
     p = bullet_client.BulletClient(connection_mode=sim_conf.connection_mode)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())

@@ -12,30 +12,10 @@ from quadsim.robots.motors import MotorModel
 @pytest.mark.parametrize(
     "motor_command, expected_applied_torque, expected_observed_torque",
     [
-        pytest.param(
-            (20.0, 30.0),
-            (20.0, 30.0),
-            (20.0, 30.0),
-            id="0",
-        ),
-        pytest.param(
-            (50.0, 30.0),
-            (40.0, 30.0),
-            (50.0, 30.0),
-            id="1",
-        ),
-        pytest.param(
-            (-20.0, 60.0),
-            (-20.0, 50.0),
-            (-20.0, 60.0),
-            id="2",
-        ),
-        pytest.param(
-            (-70.0, -60.0),
-            (-60.0, -50.0),
-            (-70.0, -60.0),
-            id="3",
-        ),
+        pytest.param((20.0, 30.0), (20.0, 30.0), (20.0, 30.0), id="0",),
+        pytest.param((50.0, 30.0), (40.0, 30.0), (50.0, 30.0), id="1",),
+        pytest.param((-20.0, 60.0), (-20.0, 50.0), (-20.0, 60.0), id="2",),
+        pytest.param((-70.0, -60.0), (-60.0, -50.0), (-70.0, -60.0), id="3",),
     ],
 )
 def test_torque_control(

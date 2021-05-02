@@ -33,10 +33,7 @@ if __name__ == "__main__":
         p = bullet_client.BulletClient(connection_mode=pybullet.DIRECT)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
-    robot = A1(
-        pybullet_client=p,
-        sim_conf=sim_conf,
-    )
+    robot = A1(pybullet_client=p, sim_conf=sim_conf,)
 
     # Print out all currently set instance attributes
     for attr, val in robot.__dict__.items():
