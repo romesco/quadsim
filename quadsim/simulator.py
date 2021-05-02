@@ -1,4 +1,4 @@
-""" A convenience class for configuring and instantiating the simulator (pybullet).
+""" A convenience dataclass for configuring the simulator (pybullet).
 """
 from dataclasses import dataclass
 from typing import Any
