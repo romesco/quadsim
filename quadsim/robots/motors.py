@@ -106,6 +106,8 @@ class MotorGroup:
                 )
         self._motor_control_mode = motor0_control_mode
 
+        # TODO(romesco): Reevaluate whether protected vars in motors make sense.
+        # assignees: romesco
         self._motor_joint_names = [motor._name for motor in motors]
         self._kps = np.array([motor._kp for motor in motors])
         self._kds = np.array([motor._kd for motor in motors])
@@ -117,7 +119,6 @@ class MotorGroup:
         self._max_velocities = np.array([motor._max_velocity for motor in motors])
         self._min_torques = np.array([motor._min_torque for motor in motors])
         self._max_torques = np.array([motor._max_torque for motor in motors])
-        # TODO(romesco ): Reevaluate whether protected vars in motors make sense.
 
     @property
     def kps(self):
