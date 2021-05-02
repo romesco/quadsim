@@ -46,7 +46,7 @@ class MotorModel:
         self,
         name: str = None,
         motor_control_mode: MotorControlMode = MotorControlMode.POSITION,
-        # TODO: add to docs what this is, e.g. rotational position in rads
+        # TODO(yxyang): add to docs what this is, e.g. rotational position in rads
         init_position: float = 0.0,
         min_position: float = 0.0,
         max_position: float = 0.0,
