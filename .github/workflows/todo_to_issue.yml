@@ -1,7 +1,7 @@
 name: "Workflow"
 on: ["push"]
 jobs:
-  build:
+  todos_to_issues:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@master"
