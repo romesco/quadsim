@@ -70,3 +70,8 @@ if __name__ == "__main__":
             print("======MotorGroup:")
             for bttr, vbl in val.__dict__.items():
                 print(bttr, "=", vbl)
+    """
+    @TODO Add print functionality to Robot
+    @BODY Calling `print(robot)` or `pprint(robot)` iterates through
+    the current robot configuration.
+    """
