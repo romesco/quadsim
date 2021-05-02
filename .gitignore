@@ -130,3 +130,7 @@ dmypy.json
 
 # vim
 *.sw*
+
+#hydra
+outputs/
+multirun/
