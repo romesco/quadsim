@@ -10,7 +10,6 @@ python examples/create_a1_from_robot_class.py
 import pybullet
 import pybullet_data
 from pybullet_utils import bullet_client
-
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.robots.motors import MotorModel

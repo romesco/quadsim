@@ -28,4 +28,3 @@ class SimulatorConf:
     init_position: Tuple[float, float, float] = (0.0, 0.0, 0.32)
     init_rack_position: Tuple[float, float, float] = (0.0, 0.0, 1)
     on_rack: bool = False
-

@@ -1,7 +1,6 @@
 import pybullet
 import pybullet_data
 from pybullet_utils import bullet_client
-
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.robots.motors import MotorModel
@@ -48,7 +47,7 @@ if __name__ == "__main__":
         kd=1,
     )
 
-    motor_group = MotorGroup(motors=[motor1, motor2,])
+    motor_group = MotorGroup(motors=[motor1, motor2])
 
     robot = Robot(
         pybullet_client=p,

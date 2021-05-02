@@ -31,7 +31,7 @@ if __name__ == "__main__":
         kd=1,
     )
 
-    motor_group = MotorGroup(motors=[motor1, motor2,])
+    motor_group = MotorGroup(motors=[motor1, motor2])
     # Print out all currently set instance attributes
     for attr, val in motor_group.__dict__.items():
         print(attr, "=", val)

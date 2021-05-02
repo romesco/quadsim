@@ -3,7 +3,6 @@ from typing import Tuple
 
 import numpy as np
 import pytest
-
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.robots.motors import MotorModel

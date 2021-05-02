@@ -4,7 +4,6 @@ from typing import Tuple
 
 import numpy as np
 import pybullet_data
-
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.simulator import SimulatorConf
