@@ -67,6 +67,7 @@ def test_torque_control(
 # TODO(yxyang) Complete testing for MotorGroup / Motor functionality.
 # We have partially implemented these tests, but there are still some commented lines to be converted.
 
+
 @pytest.mark.parametrize(
     "current_angle, current_velocity, desired_angle, expected_applied_torque, "
     "expected_observed_torque",
@@ -75,7 +76,7 @@ def test_torque_control(
         ((0.0, 0.0), (1, -1), (0.2, 0.1), (19.0, 11.0), (19.0, 11.0)),
         ((1.0, 1.0), (1.0, -1.0), (1.2, 1.1), (19.0, 11.0), (19.0, 11.0)),
         ((0.0, 0.0), (0.0, 0.0), (2, 1), (40.0, 50.0), (200.0, 100.0)),
-    ]
+    ],
 )
 def test_position_control(
     motors,
@@ -98,7 +99,7 @@ def test_position_control(
     [
         ((0.0, 0.0), (0.0, 0.0), (0.2, 0.1), (5, 10), (5.0, 10.0), (5.0, 10.0)),
         ((0.0, 0.0), (1, -1), (0.2, 0.1), (0, 0), (0.0, 0), (0.0, 0.0)),
-    ]
+    ],
 )
 def test_hybrid_control_no_pd(
     motors,
@@ -127,7 +128,7 @@ def test_hybrid_control_no_pd(
         ((0.0, 0.0), (1, -1), (0.2, 0.1), (-1, -2), (18.0, 9.0), (18.0, 9.0)),
         ((1.0, 1.0), (1.0, -1.0), (1.2, 1.1), (0, 0), (19.0, 11.0), (19.0, 11.0)),
         ((0.0, 0.0), (0.0, 0.0), (2, 1), (10, 10), (40.0, 50.0), (210.0, 110.0)),
-    ]
+    ],
 )
 def test_hybrid_control_with_pd(
     motors,
@@ -153,13 +154,13 @@ def test_hybrid_control_with_pd(
 @pytest.mark.parametrize(
     "motor_command, strength_ratios, expected_applied_torque, "
     "expected_observed_torque",
-     [
-         ((20.0, 30.0), 1.0, (20.0, 30.0), (20.0, 30.0)),
-         ((20.0, 30.0), 0.5, (10.0, 15.0), (20.0, 30.0)),
-         ((60.0, 30.0), 0.8, (32.0, 24.0), (60.0, 30.0)),
-         ((40.0, 60.0), (1.0, 0.8), (40.0, 40.0), (40.0, 60.0)),
-     ]
- )
+    [
+        ((20.0, 30.0), 1.0, (20.0, 30.0), (20.0, 30.0)),
+        ((20.0, 30.0), 0.5, (10.0, 15.0), (20.0, 30.0)),
+        ((60.0, 30.0), 0.8, (32.0, 24.0), (60.0, 30.0)),
+        ((40.0, 60.0), (1.0, 0.8), (40.0, 40.0), (40.0, 60.0)),
+    ],
+)
 def test_set_strength_ratios(
     motors,
     motor_command,
@@ -183,7 +184,7 @@ def test_set_strength_ratios(
         ((100.0, 100.0), (1.0, 1.0), (0.2, 0.1), (20.0, 9.0), (20.0, 9.0)),
         ((100.0, 100.0), (1.0, 0.0), (0.2, 0.1), (20.0, 10.0), (20.0, 10.0)),
         ((1.0, 100.0), (1.0, 1.0), (0.2, 0.1), (0.2, 9.0), (0.2, 9.0)),
-    ]
+    ],
 )
 def test_set_pd_gain(
     motors, kp, kd, desired_angle, expected_applied_torque, expected_observed_torque
