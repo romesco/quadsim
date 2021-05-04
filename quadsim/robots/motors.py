@@ -1,7 +1,6 @@
 """Implements models for single DC motors and compositional motor groups."""
-from dataclasses import dataclass
-
 import enum
+from dataclasses import dataclass
 from typing import Optional
 from typing import Sequence
 from typing import Tuple

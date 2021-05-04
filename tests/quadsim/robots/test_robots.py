@@ -35,26 +35,10 @@ def setup():
 @pytest.mark.parametrize(
     "on_rack, hard_reset",
     [
-        pytest.param(
-            True,
-            True,
-            id="0",
-        ),
-        pytest.param(
-            True,
-            False,
-            id="1",
-        ),
-        pytest.param(
-            False,
-            True,
-            id="2",
-        ),
-        pytest.param(
-            False,
-            False,
-            id="3",
-        ),
+        pytest.param(True, True, id="0",),
+        pytest.param(True, False, id="1",),
+        pytest.param(False, True, id="2",),
+        pytest.param(False, False, id="3",),
     ],
 )
 def test_reset(on_rack, hard_reset):
@@ -89,8 +73,7 @@ def test_reset(on_rack, hard_reset):
         )
     np.testing.assert_allclose(robot.motor_velocities, np.zeros(12), atol=0.01)
     np.testing.assert_allclose(
-        robot.control_timestep,
-        sim_conf.timestep * sim_conf.action_repeat,
+        robot.control_timestep, sim_conf.timestep * sim_conf.action_repeat,
     )
     np.testing.assert_allclose(robot.time_since_reset, 0.0)
 
