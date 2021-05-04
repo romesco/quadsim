@@ -3,6 +3,7 @@ from typing import Tuple
 
 import numpy as np
 import pytest
+from quadsim.robots.motors import MotorCommand
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.robots.motors import MotorModel
@@ -39,7 +40,7 @@ def motors():
 
 
 @pytest.mark.parametrize(
-    "motor_command, expected_applied_torque, expected_observed_torque",
+    "torque_commands, expected_applied_torque, expected_observed_torque",
     [
         ((20.0, 30.0), (20.0, 30.0), (20.0, 30.0)),
         ((50.0, 30.0), (40.0, 30.0), (50.0, 30.0)),
@@ -49,16 +50,15 @@ def motors():
 )
 def test_torque_control(
     motors,
-    motor_command: Tuple[float, float],
+    torque_commands: Tuple[float, float],
     expected_applied_torque: Tuple[float, float],
     expected_observed_torque: Tuple[float, float],
 ) -> None:
-
-    # instantiate MotorGroup (containing 2 MotorModels)
-    current_angle = np.zeros(2)
+    motor_command = MotorCommand(desired_extra_torque=torque_commands)
+    current_position = np.zeros(2)
     current_velocity = np.zeros(2)
     applied_torque, observed_torque = motors.convert_to_torque(
-        motor_command, current_angle, current_velocity, MotorControlMode.TORQUE
+        motor_command, current_position, current_velocity, MotorControlMode.TORQUE
     )
     np.testing.assert_allclose(applied_torque, expected_applied_torque)
     np.testing.assert_allclose(observed_torque, expected_observed_torque)
@@ -69,7 +69,7 @@ def test_torque_control(
 
 
 @pytest.mark.parametrize(
-    "current_angle, current_velocity, desired_angle, expected_applied_torque, "
+    "current_position, current_velocity, desired_position, expected_applied_torque, "
     "expected_observed_torque",
     [
         ((0.0, 0.0), (0.0, 0.0), (0.2, 0.1), (20.0, 10.0), (20.0, 10.0)),
@@ -80,21 +80,22 @@ def test_torque_control(
 )
 def test_position_control(
     motors,
-    current_angle,
+    current_position,
     current_velocity,
-    desired_angle,
+    desired_position,
     expected_applied_torque,
     expected_observed_torque,
 ):
+    motor_command = MotorCommand(desired_position=np.array(desired_position))
     applied_torque, observed_torque = motors.convert_to_torque(
-        desired_angle, current_angle, current_velocity, MotorControlMode.POSITION
+        motor_command, current_position, current_velocity, MotorControlMode.POSITION
     )
     np.testing.assert_allclose(applied_torque, expected_applied_torque)
     np.testing.assert_allclose(observed_torque, expected_observed_torque)
 
 
 @pytest.mark.parametrize(
-    "current_angle, current_velocity, desired_angle, desired_extra_torque, "
+    "current_position, current_velocity, desired_position, desired_extra_torque, "
     "expected_applied_torque, expected_observed_torque",
     [
         ((0.0, 0.0), (0.0, 0.0), (0.2, 0.1), (5, 10), (5.0, 10.0), (5.0, 10.0)),
@@ -103,25 +104,29 @@ def test_position_control(
 )
 def test_hybrid_control_no_pd(
     motors,
-    current_angle,
+    current_position,
     current_velocity,
-    desired_angle,
+    desired_position,
     desired_extra_torque,
     expected_applied_torque,
     expected_observed_torque,
 ):
-    command = np.zeros(10)
-    command[[0, 5]] = desired_angle
-    command[[4, 9]] = desired_extra_torque
+    motor_command = MotorCommand(
+        desired_position=np.array(desired_position),
+        kp=np.array([0.0, 0.0]),
+        desired_velocity=np.array([0.0, 0.0]),
+        kd=np.array([0.0, 0.0]),
+        desired_extra_torque=np.array(desired_extra_torque),
+    )
     applied_torque, observed_torque = motors.convert_to_torque(
-        command, current_angle, current_velocity, MotorControlMode.HYBRID
+        motor_command, current_position, current_velocity, MotorControlMode.HYBRID
     )
     np.testing.assert_allclose(applied_torque, expected_applied_torque)
     np.testing.assert_allclose(observed_torque, expected_observed_torque)
 
 
 @pytest.mark.parametrize(
-    "current_angle, current_velocity, desired_angle, desired_extra_torque, "
+    "current_position, current_velocity, desired_position, desired_extra_torque, "
     "expected_applied_torque, expected_observed_torque",
     [
         ((0.0, 0.0), (0.0, 0.0), (0.2, 0.1), (5, 10), (25.0, 20.0), (25.0, 20.0)),
@@ -132,27 +137,29 @@ def test_hybrid_control_no_pd(
 )
 def test_hybrid_control_with_pd(
     motors,
-    current_angle,
+    current_position,
     current_velocity,
-    desired_angle,
+    desired_position,
     desired_extra_torque,
     expected_applied_torque,
     expected_observed_torque,
 ):
-    command = np.zeros(10)
-    command[[0, 5]] = desired_angle
-    command[[1, 6]] = 100
-    command[[3, 8]] = 1
-    command[[4, 9]] = desired_extra_torque
+    motor_command = MotorCommand(
+        desired_position=np.array(desired_position),
+        kp=np.array([100, 100]),
+        desired_velocity=np.array([0.0, 0.0]),
+        kd=np.array([1, 1]),
+        desired_extra_torque=np.array(desired_extra_torque),
+    )
     applied_torque, observed_torque = motors.convert_to_torque(
-        command, current_angle, current_velocity, MotorControlMode.HYBRID
+        motor_command, current_position, current_velocity, MotorControlMode.HYBRID
     )
     np.testing.assert_allclose(applied_torque, expected_applied_torque)
     np.testing.assert_allclose(observed_torque, expected_observed_torque)
 
 
 @pytest.mark.parametrize(
-    "motor_command, strength_ratios, expected_applied_torque, "
+    "desired_extra_torque, strength_ratios, expected_applied_torque, "
     "expected_observed_torque",
     [
         ((20.0, 30.0), 1.0, (20.0, 30.0), (20.0, 30.0)),
@@ -163,7 +170,7 @@ def test_hybrid_control_with_pd(
 )
 def test_set_strength_ratios(
     motors,
-    motor_command,
+    desired_extra_torque,
     strength_ratios,
     expected_applied_torque,
     expected_observed_torque,
@@ -171,6 +178,7 @@ def test_set_strength_ratios(
     motors.strength_ratios = strength_ratios
     current_angle = np.zeros(2)
     current_velocity = np.zeros(2)
+    motor_command = MotorCommand(desired_extra_torque=np.array(desired_extra_torque))
     applied_torque, observed_torque = motors.convert_to_torque(
         motor_command, current_angle, current_velocity, MotorControlMode.TORQUE
     )
@@ -179,7 +187,7 @@ def test_set_strength_ratios(
 
 
 @pytest.mark.parametrize(
-    "kp, kd, desired_angle, expected_applied_torque, expected_observed_torque",
+    "kp, kd, desired_position, expected_applied_torque, expected_observed_torque",
     [
         ((100.0, 100.0), (1.0, 1.0), (0.2, 0.1), (20.0, 9.0), (20.0, 9.0)),
         ((100.0, 100.0), (1.0, 0.0), (0.2, 0.1), (20.0, 10.0), (20.0, 10.0)),
@@ -187,14 +195,15 @@ def test_set_strength_ratios(
     ],
 )
 def test_set_pd_gain(
-    motors, kp, kd, desired_angle, expected_applied_torque, expected_observed_torque
+    motors, kp, kd, desired_position, expected_applied_torque, expected_observed_torque
 ):
     motors.kps = kp
     motors.kds = kd
     current_angle = np.zeros(2)
     current_velocity = np.array([0.0, 1.0])
+    motor_command = MotorCommand(desired_position=np.array(desired_position))
     applied_torque, observed_torque = motors.convert_to_torque(
-        desired_angle, current_angle, current_velocity, MotorControlMode.POSITION
+        motor_command, current_angle, current_velocity, MotorControlMode.POSITION
     )
     np.testing.assert_allclose(applied_torque, expected_applied_torque)
     np.testing.assert_allclose(observed_torque, expected_observed_torque)

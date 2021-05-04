@@ -4,6 +4,7 @@ from typing import Tuple
 
 import numpy as np
 import pybullet_data
+from quadsim.robots.motors import MotorCommand
 from quadsim.robots.motors import MotorControlMode
 from quadsim.robots.motors import MotorGroup
 from quadsim.simulator import SimulatorConf
@@ -133,8 +134,9 @@ class Robot:
 
         # Steps the robot with position command
         num_reset_steps = int(self._sim_conf.reset_time / self._sim_conf.timestep)
+        motor_command = MotorCommand(desired_position=self._motor_group._init_positions)
         for _ in range(num_reset_steps):
-            self.step(self._motor_group.init_positions, MotorControlMode.POSITION)
+            self.step(motor_command, MotorControlMode.POSITION)
         self._step_counter = 0
 
     def _apply_action(self, action, motor_control_mode=None) -> None:

@@ -5,6 +5,7 @@ import pybullet_data
 import pytest
 from pybullet_utils import bullet_client
 from quadsim.robots.a1 import A1
+from quadsim.robots.motors import MotorCommand
 from quadsim.simulator import SimulatorConf
 
 
@@ -34,10 +35,26 @@ def setup():
 @pytest.mark.parametrize(
     "on_rack, hard_reset",
     [
-        pytest.param(True, True, id="0",),
-        pytest.param(True, False, id="1",),
-        pytest.param(False, True, id="2",),
-        pytest.param(False, False, id="3",),
+        pytest.param(
+            True,
+            True,
+            id="0",
+        ),
+        pytest.param(
+            True,
+            False,
+            id="1",
+        ),
+        pytest.param(
+            False,
+            True,
+            id="2",
+        ),
+        pytest.param(
+            False,
+            False,
+            id="3",
+        ),
     ],
 )
 def test_reset(on_rack, hard_reset):
@@ -72,7 +89,8 @@ def test_reset(on_rack, hard_reset):
         )
     np.testing.assert_allclose(robot.motor_velocities, np.zeros(12), atol=0.01)
     np.testing.assert_allclose(
-        robot.control_timestep, sim_conf.timestep * sim_conf.action_repeat,
+        robot.control_timestep,
+        sim_conf.timestep * sim_conf.action_repeat,
     )
     np.testing.assert_allclose(robot.time_since_reset, 0.0)
 
@@ -80,6 +98,7 @@ def test_reset(on_rack, hard_reset):
 def test_step():
     pybullet_client, sim_conf = setup()
     robot = A1(pybullet_client, sim_conf=sim_conf)
+    motor_command = MotorCommand(desired_position=robot._motor_group._init_positions)
     for _ in range(10):
-        robot.step(robot._motor_group._init_positions)
+        robot.step(motor_command)
     np.testing.assert_equal(robot.time_since_reset, 10 * robot.control_timestep)
