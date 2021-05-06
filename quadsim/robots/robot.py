@@ -128,7 +128,7 @@ class Robot:
             self._pybullet_client.resetJointState(
                 self.quadruped,
                 self._motor_joint_ids[i],
-                self._motor_group._init_positions[i],
+                self._motor_group.init_positions[i],
                 targetVelocity=0,
             )
 

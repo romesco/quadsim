@@ -29,6 +29,8 @@ class MotorControlMode(enum.Enum):
 
 @dataclass
 class MotorCommand:
+    """A dataclass representing motor commands."""
+
     desired_position: _FloatOrArray = 0
     kp: _FloatOrArray = 0
     desired_velocity: _FloatOrArray = 0
