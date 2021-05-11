@@ -3,5 +3,5 @@ source =
   quadsim
 
 omit =
-  *_test.py
-  quadsim/examples/*
+  tests/*
+  examples/*
