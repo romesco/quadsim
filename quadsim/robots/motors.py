@@ -29,12 +29,18 @@ class MotorControlMode(enum.Enum):
 
 @dataclass
 class MotorCommand:
-    """A dataclass representing motor commands."""
+    """A dataclass representing motor commands.
+
+    For POSITION mode, only desired_position is used.
+    For TORQUE mode, only desired_torque is used.
+    For HYBRID mode, desired_poisition, kp, desired_velocity, kd,
+    and desired_extra_torque is used."""
 
     desired_position: _FloatOrArray = 0
     kp: _FloatOrArray = 0
     desired_velocity: _FloatOrArray = 0
     kd: _FloatOrArray = 0
+    desired_torque: _FloatOrArray = 0
     desired_extra_torque: _FloatOrArray = 0
 
 
@@ -182,7 +188,7 @@ class MotorGroup:
                 desired_position - current_position
             ) + self._kds * (desired_velocity - current_velocity)
         elif motor_control_mode == MotorControlMode.TORQUE:
-            desired_torque = command.desired_extra_torque
+            desired_torque = command.desired_torque
         else:  # HYBRID case
             desired_position = command.desired_position
             kp = command.kp

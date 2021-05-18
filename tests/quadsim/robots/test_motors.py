@@ -54,7 +54,7 @@ def test_torque_control(
     expected_applied_torque: Tuple[float, float],
     expected_observed_torque: Tuple[float, float],
 ) -> None:
-    motor_command = MotorCommand(desired_extra_torque=torque_commands)
+    motor_command = MotorCommand(desired_torque=torque_commands)
     current_position = np.zeros(2)
     current_velocity = np.zeros(2)
     applied_torque, observed_torque = motors.convert_to_torque(
@@ -159,7 +159,7 @@ def test_hybrid_control_with_pd(
 
 
 @pytest.mark.parametrize(
-    "desired_extra_torque, strength_ratios, expected_applied_torque, "
+    "desired_torque, strength_ratios, expected_applied_torque, "
     "expected_observed_torque",
     [
         ((20.0, 30.0), 1.0, (20.0, 30.0), (20.0, 30.0)),
@@ -170,7 +170,7 @@ def test_hybrid_control_with_pd(
 )
 def test_set_strength_ratios(
     motors,
-    desired_extra_torque,
+    desired_torque,
     strength_ratios,
     expected_applied_torque,
     expected_observed_torque,
@@ -178,7 +178,7 @@ def test_set_strength_ratios(
     motors.strength_ratios = strength_ratios
     current_angle = np.zeros(2)
     current_velocity = np.zeros(2)
-    motor_command = MotorCommand(desired_extra_torque=np.array(desired_extra_torque))
+    motor_command = MotorCommand(desired_torque=np.array(desired_torque))
     applied_torque, observed_torque = motors.convert_to_torque(
         motor_command, current_angle, current_velocity, MotorControlMode.TORQUE
     )
