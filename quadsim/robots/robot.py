@@ -46,7 +46,8 @@ class Robot:
         self._foot_joint_names = foot_joint_names
         self._num_motors = self._motor_group.num_motors if self._motor_group else 0
         self._motor_torques = None
-        self._load_robot_urdf(urdf_path)
+        self._urdf_path = urdf_path
+        self._load_robot_urdf(self._urdf_path)
         self._step_counter = 0
         self.reset()
 
@@ -59,18 +60,20 @@ class Robot:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
         if self._sim_conf.on_rack:
-            self.quadruped = p.loadURDF(urdf_path, self._sim_conf.init_rack_position)
-            self.rack_constraint = p.createConstraint(
-                parentBodyUniqueId=self.quadruped,
-                parentLinkIndex=-1,
-                childBodyUniqueId=-1,
-                childLinkIndex=-1,
-                jointType=self._pybullet_client.JOINT_FIXED,
-                jointAxis=[0, 0, 0],
-                parentFramePosition=[0, 0, 0],
-                childFramePosition=self._sim_conf.init_rack_position,
-                childFrameOrientation=[0.0, 0.0, 0.0, 1],
+            self.quadruped = p.loadURDF(
+                urdf_path, self._sim_conf.init_rack_position, useFixedBase=True
             )
+            # self.rack_constraint = p.createConstraint(
+            #     parentBodyUniqueId=self.quadruped,
+            #     parentLinkIndex=-1,
+            #     childBodyUniqueId=-1,
+            #     childLinkIndex=-1,
+            #     jointType=self._pybullet_client.JOINT_FIXED,
+            #     jointAxis=[0, 0, 0],
+            #     parentFramePosition=[0, 0, 0],
+            #     childFramePosition=self._sim_conf.init_rack_position,
+            #     childFrameOrientation=[0.0, 0.0, 0.0, 1],
+            # )
         else:
             self.quadruped = p.loadURDF(urdf_path, self._sim_conf.init_position)
 
@@ -101,7 +104,7 @@ class Robot:
         """Resets the robot."""
         if hard_reset:
             # This assumes that resetSimulation() is already called.
-            self._load_robot_urdf()
+            self._load_robot_urdf(self._urdf_path)
         else:
             init_position = (
                 self._sim_conf.init_rack_position

@@ -31,7 +31,6 @@ def setup():
     return p, sim_conf
 
 
-@pytest.mark.skip(reason="TODO: robot reset test needs implementation")
 @pytest.mark.parametrize(
     "on_rack, hard_reset",
     [
@@ -43,6 +42,8 @@ def setup():
 )
 def test_reset(on_rack, hard_reset):
     pybullet_client, sim_conf = setup()
+    sim_conf.on_rack = on_rack
+
     robot = A1(pybullet_client=pybullet_client, sim_conf=sim_conf)
     if hard_reset:
         robot._pybullet_client.resetSimulation()
@@ -51,7 +52,7 @@ def test_reset(on_rack, hard_reset):
     robot.reset(hard_reset=hard_reset)
     if on_rack:
         np.testing.assert_allclose(
-            robot.base_position, sim_conf.init_rack_position, atol=0.01
+            robot.base_position, sim_conf.init_rack_position, atol=0.05
         )
     else:
         np.testing.assert_allclose(
