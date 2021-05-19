@@ -5,6 +5,7 @@ import pybullet_data
 import pytest
 from pybullet_utils import bullet_client
 from quadsim.robots.a1 import A1
+from quadsim.robots.motors import MotorCommand
 from quadsim.simulator import SimulatorConf
 
 
@@ -80,6 +81,7 @@ def test_reset(on_rack, hard_reset):
 def test_step():
     pybullet_client, sim_conf = setup()
     robot = A1(pybullet_client, sim_conf=sim_conf)
+    motor_command = MotorCommand(desired_position=robot._motor_group.init_positions)
     for _ in range(10):
-        robot.step(robot._motor_group._init_positions)
+        robot.step(motor_command)
     np.testing.assert_equal(robot.time_since_reset, 10 * robot.control_timestep)
